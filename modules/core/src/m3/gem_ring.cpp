@@ -35,3 +35,13 @@ const std::vector< std::size_t >& m3::gem_ring::free_gems() const
   return m_free_gems;
 }
 
+const std::vector< float >& m3::gem_ring::free_gem_radius() const
+{
+  return m_free_gem_radius;
+}
+
+const std::vector< float >& m3::gem_ring::free_gem_angle() const
+{
+  return m_free_gem_angle;
+}
+
