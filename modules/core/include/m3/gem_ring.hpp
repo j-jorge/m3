@@ -6,10 +6,10 @@
 
 namespace m3
 {
-  class gem_circle
+  class gem_ring
   {
   public:
-    gem_circle();
+    gem_ring();
 
     float get_launcher_angle() const;
     void set_launcher_angle( float angle );
@@ -21,7 +21,7 @@ namespace m3
     
   private:
     std::vector< gem > m_all_gems;
-    std::vector< std::size_t > m_circle;
+    std::vector< std::size_t > m_ring;
     std::vector< std::size_t > m_free_gems;
     std::vector< float > m_free_gem_radius;
     std::vector< float > m_free_gem_angle;

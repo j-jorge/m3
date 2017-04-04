@@ -5,7 +5,7 @@ set( core_module_root "${modules_root}/core" )
 add_library(
   m3_core STATIC 
 
-  "${core_module_root}/src/m3/gem_circle.cpp"
+  "${core_module_root}/src/m3/gem_ring.cpp"
   )
 
 target_include_directories(
