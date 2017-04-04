@@ -14,15 +14,17 @@ namespace m3
     float get_launcher_angle() const;
     void set_launcher_angle( float angle );
 
-    std::vector< std::size_t > expand( float d );
-    
     void launch( gem g );
+
+    const std::vector< gem >& gems() const;
+    const std::vector< std::size_t >& free_gems() const;
     
   private:
-    std::vector< gem > m_circle;
-    std::vector< gem > m_free_gems;
-    std::vector< float > m_free_gems_radius;
-    std::vector< float > m_free_gems_angles;
+    std::vector< gem > m_all_gems;
+    std::vector< std::size_t > m_circle;
+    std::vector< std::size_t > m_free_gems;
+    std::vector< float > m_free_gem_radius;
+    std::vector< float > m_free_gem_angle;
 
     float m_launcher_angle;
   };
