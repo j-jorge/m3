@@ -30,7 +30,8 @@ test: target
 	cd $(BUILD_DIR) && GTEST_COLOR=1 ctest --verbose
 
 target: .cmake
-	cd $(BUILD_DIR) && $(MAKE)
+	cd $(BUILD_DIR) \
+	  && /usr/bin/time -f '\n-- Build time: %U seconds --\n' $(MAKE)
 
 .cmake: .build_marker
 	cd $(BUILD_DIR) \
