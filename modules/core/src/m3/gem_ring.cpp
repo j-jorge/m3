@@ -1,26 +1,26 @@
 #include "m3/gem_ring.hpp"
 
 m3::gem_ring::gem_ring()
-  : m_launcher_angle( 0 )
+  : m_orientation( 0 )
 {
 
 }
 
-float m3::gem_ring::get_launcher_angle() const
+float m3::gem_ring::get_orientation() const
 {
-  return m_launcher_angle;
+  return m_orientation;
 }
 
-void m3::gem_ring::set_launcher_angle( float angle )
+void m3::gem_ring::set_orientation( float orientation )
 {
-  m_launcher_angle = angle;
+  m_orientation = orientation;
 }
 
-void m3::gem_ring::launch( gem g )
+void m3::gem_ring::launch( float direction, gem g )
 {
   m_free_gems.push_back( m_all_gems.size() );
   m_free_gem_radius.push_back( 0 );
-  m_free_gem_angle.push_back( m_launcher_angle );
+  m_free_gem_direction.push_back( direction );
   
   m_all_gems.push_back( g );
 }
@@ -40,8 +40,8 @@ const std::vector< float >& m3::gem_ring::free_gem_radius() const
   return m_free_gem_radius;
 }
 
-const std::vector< float >& m3::gem_ring::free_gem_angle() const
+const std::vector< float >& m3::gem_ring::free_gem_direction() const
 {
-  return m_free_gem_angle;
+  return m_free_gem_direction;
 }
 

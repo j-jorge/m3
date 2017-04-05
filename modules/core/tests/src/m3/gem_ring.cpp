@@ -3,30 +3,29 @@
 
 #include <gtest/gtest.h>
 
-TEST( gem_ring, initial_launcher_angle )
+TEST( gem_ring, initial_orientation )
 {
   m3::gem_ring ring;
   
-  EXPECT_FLOAT_EQ( 0, ring.get_launcher_angle() );
+  EXPECT_FLOAT_EQ( 0, ring.get_orientation() );
 }
 
-TEST( gem_ring, set_launcher_angle )
+TEST( gem_ring, set_orientation )
 {
   m3::gem_ring ring;
-  ring.set_launcher_angle( 0.3 );
+  ring.set_orientation( 0.3 );
   
-  EXPECT_FLOAT_EQ( 0.3, ring.get_launcher_angle() );
+  EXPECT_FLOAT_EQ( 0.3, ring.get_orientation() );
 }
 
 TEST( gem_ring, launch )
 {
   m3::gem_ring ring;
-  const float launcher_angle( 0.3 );
-  ring.set_launcher_angle( launcher_angle );
 
+  const float direction( 0.3 );
   const m3::gem g( 2 );
   
-  ring.launch( g );
+  ring.launch( direction, g );
   const std::vector< m3::gem >& gems( ring.gems() );
   const std::vector< std::size_t >& free_gems( ring.free_gems() );
 
@@ -38,7 +37,7 @@ TEST( gem_ring, launch )
   ASSERT_EQ( free_gems.size(), radius.size() );
   EXPECT_FLOAT_EQ( 0, radius[ 0 ] );
   
-  const std::vector< float >& angle( ring.free_gem_angle() );
-  ASSERT_EQ( free_gems.size(), angle.size() );
-  EXPECT_FLOAT_EQ( launcher_angle, angle[ 0 ] );
+  const std::vector< float >& directions( ring.free_gem_direction() );
+  ASSERT_EQ( free_gems.size(), directions.size() );
+  EXPECT_FLOAT_EQ( direction, directions[ 0 ] );
 }

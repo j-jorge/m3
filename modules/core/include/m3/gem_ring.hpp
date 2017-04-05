@@ -11,16 +11,16 @@ namespace m3
   public:
     gem_ring();
 
-    float get_launcher_angle() const;
-    void set_launcher_angle( float angle );
+    float get_orientation() const;
+    void set_orientation( float orientation );
 
-    void launch( gem g );
+    void launch( float direction, gem g );
 
     const std::vector< gem >& gems() const;
 
     const std::vector< std::size_t >& free_gems() const;
     const std::vector< float >& free_gem_radius() const;
-    const std::vector< float >& free_gem_angle() const;
+    const std::vector< float >& free_gem_direction() const;
     
   private:
     std::vector< gem > m_all_gems;
@@ -28,8 +28,8 @@ namespace m3
     
     std::vector< std::size_t > m_free_gems;
     std::vector< float > m_free_gem_radius;
-    std::vector< float > m_free_gem_angle;
+    std::vector< float > m_free_gem_direction;
 
-    float m_launcher_angle;
+    float m_orientation;
   };
 }
