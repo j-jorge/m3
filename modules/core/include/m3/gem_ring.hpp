@@ -18,13 +18,17 @@ namespace m3
 
     const std::vector< gem >& gems() const;
 
+    const std::vector< std::size_t >& chain() const;
+
     const std::vector< std::size_t >& free_gems() const;
     const std::vector< float >& free_gem_radius() const;
     const std::vector< float >& free_gem_direction() const;
-    
+
+    void expand( float d );
+
   private:
     std::vector< gem > m_all_gems;
-    std::vector< std::size_t > m_ring;
+    std::vector< std::size_t > m_chain;
     
     std::vector< std::size_t > m_free_gems;
     std::vector< float > m_free_gem_radius;
