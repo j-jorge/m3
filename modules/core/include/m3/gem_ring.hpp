@@ -27,6 +27,9 @@ namespace m3
     void expand( float d );
 
   private:
+    std::size_t direction_to_chain_index( float d ) const;
+    
+  private:
     std::vector< gem > m_all_gems;
     std::vector< std::size_t > m_chain;
     

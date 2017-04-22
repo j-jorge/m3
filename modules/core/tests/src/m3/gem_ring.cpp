@@ -190,8 +190,8 @@ TEST( gem_ring, expand_four )
     ASSERT_EQ( 2, chain.size() );
     ASSERT_LT( chain[ 0 ], gems.size() );
     ASSERT_LT( chain[ 1 ], gems.size() );
-    EXPECT_EQ( g_1, gems[ chain[ 0 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 1 ] ] );
+    EXPECT_EQ( g_1, gems[ chain[ 1 ] ] );
+    EXPECT_EQ( g_2, gems[ chain[ 0 ] ] );
   }
 
   ring.expand( 0.4 );
@@ -208,8 +208,70 @@ TEST( gem_ring, expand_four )
     ASSERT_LT( chain[ 0 ], gems.size() );
     ASSERT_LT( chain[ 1 ], gems.size() );
     ASSERT_LT( chain[ 2 ], gems.size() );
-    EXPECT_EQ( g_1, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, gems[ chain[ 2 ] ] );
     EXPECT_EQ( g_2, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ chain[ 2 ] ] );
+    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+  }
+}
+
+TEST( gem_ring, expand_order )
+{
+  m3::gem_ring ring;
+
+  const m3::gem g_1( 4 );
+
+  ring.launch( 0, g_1 );
+  ring.expand( 1 );
+
+  const m3::gem g_2( 1 );
+
+  ring.launch( 0, g_2 );
+  ring.expand( 1 );
+
+  const m3::gem g_3( 2 );
+
+  ring.launch( 0, g_3 );
+  ring.expand( 1 );
+
+  {
+    const std::vector< m3::gem >& gems( ring.gems() );
+    const std::vector< std::size_t >& chain( ring.chain() );
+
+    EXPECT_EQ( g_1, gems[ chain[ 2 ] ] );
+    EXPECT_EQ( g_2, gems[ chain[ 1 ] ] );
+    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+  }
+
+  const m3::gem g_4( 7 );
+  
+  ring.set_orientation( -2.1 );
+  ring.launch( 0, g_4 );
+  ring.expand( 1 );
+
+  {
+    const std::vector< m3::gem >& gems( ring.gems() );
+    const std::vector< std::size_t >& chain( ring.chain() );
+
+    EXPECT_EQ( g_1, gems[ chain[ 3 ] ] );
+    EXPECT_EQ( g_2, gems[ chain[ 2 ] ] );
+    EXPECT_EQ( g_4, gems[ chain[ 1 ] ] );
+    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+  }
+
+  const m3::gem g_5( 55 );
+  
+  ring.set_orientation( 0 );
+  ring.launch( 4.713, g_5 );
+  ring.expand( 1 );
+
+  {
+    const std::vector< m3::gem >& gems( ring.gems() );
+    const std::vector< std::size_t >& chain( ring.chain() );
+
+    EXPECT_EQ( g_1, gems[ chain[ 4 ] ] );
+    EXPECT_EQ( g_5, gems[ chain[ 3 ] ] );
+    EXPECT_EQ( g_2, gems[ chain[ 2 ] ] );
+    EXPECT_EQ( g_4, gems[ chain[ 1 ] ] );
+    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
   }
 }

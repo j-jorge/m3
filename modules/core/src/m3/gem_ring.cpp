@@ -1,5 +1,7 @@
 #include "m3/gem_ring.hpp"
 
+#include "m3/math/circle_section_index.hpp"
+
 m3::gem_ring::gem_ring()
   : m_orientation( 0 )
 {
@@ -62,12 +64,16 @@ void m3::gem_ring::expand( float d )
 
       if ( r >= 1 )
         {
-          auto gem_it( m_free_gems.begin() + i );
+          const auto gem_it( m_free_gems.begin() + i );
+          const auto gem_direction( m_free_gem_direction.begin() + i );
           
-          m_chain.emplace_back( *gem_it );
+          m_chain.insert
+            ( m_chain.begin()
+              + direction_to_chain_index( *gem_direction ) ,
+              *gem_it );
           m_free_gems.erase( gem_it );
           
-          m_free_gem_direction.erase( m_free_gem_direction.begin() + i );
+          m_free_gem_direction.erase( gem_direction );
 
           it = m_free_gem_radius.erase( it );
           end = m_free_gem_radius.end();
@@ -78,4 +84,9 @@ void m3::gem_ring::expand( float d )
           ++it;
         }
     }
+}
+
+std::size_t m3::gem_ring::direction_to_chain_index( float d ) const
+{
+  return m3::math::circle_section_index( d - m_orientation, m_chain.size() );
 }

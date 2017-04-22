@@ -14,6 +14,11 @@ target_include_directories(
   "${core_module_root}/include"
   )
 
-target_link_libraries( m3_core PUBLIC m3_stl )
+target_link_libraries(
+  m3_core
+  PUBLIC
+  m3_math
+  m3_stl
+  )
 
 add_subdirectory( tests )
