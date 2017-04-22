@@ -16,11 +16,9 @@ namespace m3
 
     void launch( float direction, gem g );
 
-    const std::vector< gem >& gems() const;
+    const std::vector< gem >& chain() const;
 
-    const std::vector< std::size_t >& chain() const;
-
-    const std::vector< std::size_t >& free_gems() const;
+    const std::vector< gem >& free_gems() const;
     const std::vector< float >& free_gem_radius() const;
     const std::vector< float >& free_gem_direction() const;
 
@@ -30,10 +28,9 @@ namespace m3
     std::size_t direction_to_chain_index( float d ) const;
     
   private:
-    std::vector< gem > m_all_gems;
-    std::vector< std::size_t > m_chain;
+    std::vector< gem > m_chain;
     
-    std::vector< std::size_t > m_free_gems;
+    std::vector< gem > m_free_gems;
     std::vector< float > m_free_gem_radius;
     std::vector< float > m_free_gem_direction;
 

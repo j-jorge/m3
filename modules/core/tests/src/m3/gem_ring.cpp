@@ -26,12 +26,10 @@ TEST( gem_ring, launch )
   const m3::gem g( 2 );
   
   ring.launch( direction, g );
-  const std::vector< m3::gem >& gems( ring.gems() );
-  const std::vector< std::size_t >& free_gems( ring.free_gems() );
+  const std::vector< m3::gem >& free_gems( ring.free_gems() );
 
   ASSERT_EQ( 1, free_gems.size() );
-  ASSERT_LT( free_gems[ 0 ], gems.size() );
-  EXPECT_EQ( g, gems[ free_gems[ 0 ] ] );
+  EXPECT_EQ( g, free_gems[ 0 ] );
 
   const std::vector< float >& radius( ring.free_gem_radius() );
   ASSERT_EQ( free_gems.size(), radius.size() );
@@ -54,12 +52,10 @@ TEST( gem_ring, expand_one )
   ring.expand( 0.5 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& free_gems( ring.free_gems() );
+    const std::vector< m3::gem >& free_gems( ring.free_gems() );
 
     ASSERT_EQ( 1, free_gems.size() );
-    ASSERT_LT( free_gems[ 0 ], gems.size() );
-    EXPECT_EQ( g, gems[ free_gems[ 0 ] ] );
+    EXPECT_EQ( g, free_gems[ 0 ] );
 
     const std::vector< float >& gem_radius( ring.free_gem_radius() );
     ASSERT_EQ( 1, gem_radius.size() );
@@ -77,12 +73,10 @@ TEST( gem_ring, expand_one )
     EXPECT_TRUE( ring.free_gem_radius().empty() );
     EXPECT_TRUE( ring.free_gem_direction().empty() );
 
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 1, chain.size() );
-    ASSERT_LT( chain[ 0 ], gems.size() );
-    EXPECT_EQ( g, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g, chain[ 0 ] );
   }
 }
 
@@ -108,18 +102,13 @@ TEST( gem_ring, expand_four )
   ring.launch( direction_3, g_3 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& free_gems( ring.free_gems() );
+    const std::vector< m3::gem >& free_gems( ring.free_gems() );
 
     ASSERT_EQ( 3, free_gems.size() );
 
-    ASSERT_LT( free_gems[ 0 ], gems.size() );
-    ASSERT_LT( free_gems[ 1 ], gems.size() );
-    ASSERT_LT( free_gems[ 2 ], gems.size() );
-
-    EXPECT_EQ( g_1, gems[ free_gems[ 0 ] ] );
-    EXPECT_EQ( g_2, gems[ free_gems[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ free_gems[ 2 ] ] );
+    EXPECT_EQ( g_1, free_gems[ 0 ] );
+    EXPECT_EQ( g_2, free_gems[ 1 ] );
+    EXPECT_EQ( g_3, free_gems[ 2 ] );
 
     const std::vector< float >& gem_radius( ring.free_gem_radius() );
     ASSERT_EQ( 3, gem_radius.size() );
@@ -137,16 +126,12 @@ TEST( gem_ring, expand_four )
   ring.expand( 0.3 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& free_gems( ring.free_gems() );
+    const std::vector< m3::gem >& free_gems( ring.free_gems() );
 
     ASSERT_EQ( 2, free_gems.size() );
 
-    ASSERT_LT( free_gems[ 0 ], gems.size() );
-    ASSERT_LT( free_gems[ 1 ], gems.size() );
-
-    EXPECT_EQ( g_2, gems[ free_gems[ 0 ] ] );
-    EXPECT_EQ( g_3, gems[ free_gems[ 1 ] ] );
+    EXPECT_EQ( g_2, free_gems[ 0 ] );
+    EXPECT_EQ( g_3, free_gems[ 1 ] );
 
     const std::vector< float >& gem_radius( ring.free_gem_radius() );
     ASSERT_EQ( 2, gem_radius.size() );
@@ -158,24 +143,20 @@ TEST( gem_ring, expand_four )
     EXPECT_FLOAT_EQ( direction_2, gem_direction[ 0 ] );
     EXPECT_FLOAT_EQ( direction_3, gem_direction[ 1 ] );
 
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 1, chain.size() );
-    ASSERT_LT( chain[ 0 ], gems.size() );
-    EXPECT_EQ( g_1, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
   }
 
   ring.expand( 0.3 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& free_gems( ring.free_gems() );
+    const std::vector< m3::gem >& free_gems( ring.free_gems() );
 
     ASSERT_EQ( 1, free_gems.size() );
 
-    ASSERT_LT( free_gems[ 0 ], gems.size() );
-
-    EXPECT_EQ( g_3, gems[ free_gems[ 0 ] ] );
+    EXPECT_EQ( g_3, free_gems[ 0 ] );
 
     const std::vector< float >& gem_radius( ring.free_gem_radius() );
     ASSERT_EQ( 1, gem_radius.size() );
@@ -185,13 +166,11 @@ TEST( gem_ring, expand_four )
     ASSERT_EQ( 1, gem_direction.size() );
     EXPECT_FLOAT_EQ( direction_3, gem_direction[ 0 ] );
 
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 2, chain.size() );
-    ASSERT_LT( chain[ 0 ], gems.size() );
-    ASSERT_LT( chain[ 1 ], gems.size() );
-    EXPECT_EQ( g_1, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 1 ] );
+    EXPECT_EQ( g_2, chain[ 0 ] );
   }
 
   ring.expand( 0.4 );
@@ -201,16 +180,12 @@ TEST( gem_ring, expand_four )
     ASSERT_TRUE( ring.free_gem_radius().empty() );
     ASSERT_TRUE( ring.free_gem_direction().empty() );
     
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 3, chain.size() );
-    ASSERT_LT( chain[ 0 ], gems.size() );
-    ASSERT_LT( chain[ 1 ], gems.size() );
-    ASSERT_LT( chain[ 2 ], gems.size() );
-    EXPECT_EQ( g_1, gems[ chain[ 2 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 2 ] );
+    EXPECT_EQ( g_2, chain[ 1 ] );
+    EXPECT_EQ( g_3, chain[ 0 ] );
   }
 }
 
@@ -234,12 +209,11 @@ TEST( gem_ring, expand_order )
   ring.expand( 1 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, gems[ chain[ 2 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 2 ] );
+    EXPECT_EQ( g_2, chain[ 1 ] );
+    EXPECT_EQ( g_3, chain[ 0 ] );
   }
 
   const m3::gem g_4( 7 );
@@ -249,13 +223,12 @@ TEST( gem_ring, expand_order )
   ring.expand( 1 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, gems[ chain[ 3 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 2 ] ] );
-    EXPECT_EQ( g_4, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 3 ] );
+    EXPECT_EQ( g_2, chain[ 2 ] );
+    EXPECT_EQ( g_4, chain[ 1 ] );
+    EXPECT_EQ( g_3, chain[ 0 ] );
   }
 
   const m3::gem g_5( 55 );
@@ -265,13 +238,12 @@ TEST( gem_ring, expand_order )
   ring.expand( 1 );
 
   {
-    const std::vector< m3::gem >& gems( ring.gems() );
-    const std::vector< std::size_t >& chain( ring.chain() );
+    const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, gems[ chain[ 4 ] ] );
-    EXPECT_EQ( g_5, gems[ chain[ 3 ] ] );
-    EXPECT_EQ( g_2, gems[ chain[ 2 ] ] );
-    EXPECT_EQ( g_4, gems[ chain[ 1 ] ] );
-    EXPECT_EQ( g_3, gems[ chain[ 0 ] ] );
+    EXPECT_EQ( g_1, chain[ 4 ] );
+    EXPECT_EQ( g_5, chain[ 3 ] );
+    EXPECT_EQ( g_2, chain[ 2 ] );
+    EXPECT_EQ( g_4, chain[ 1 ] );
+    EXPECT_EQ( g_3, chain[ 0 ] );
   }
 }
