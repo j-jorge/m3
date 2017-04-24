@@ -1,4 +1,3 @@
-#include "m3/gem.hpp"
 #include "m3/gem_ring.hpp"
 
 #include <gtest/gtest.h>
