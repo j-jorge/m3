@@ -6,6 +6,7 @@ add_library(
   m3_core STATIC 
 
   "${core_module_root}/src/m3/gem_ring.cpp"
+  "${core_module_root}/src/m3/find_adjacent_ring_gems.cpp"
   )
 
 target_include_directories(

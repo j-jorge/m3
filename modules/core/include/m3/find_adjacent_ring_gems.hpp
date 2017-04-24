@@ -1,0 +1,11 @@
+#pragma once
+
+#include "m3/gem.hpp"
+
+#include "m3/stl/vector.hpp"
+
+namespace m3
+{
+  std::vector< std::size_t > find_adjacent_ring_gems
+  ( const std::vector< gem >& ring, std::size_t range_size );
+}
