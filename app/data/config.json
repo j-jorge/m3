@@ -1,0 +1,15 @@
+{
+    "frame_duration.seconds": 0.1667,
+    
+    "expansion-rate.min": 0.01,
+    "expansion-rate.max": 0.1,
+    "expansion-rate.start_date.seconds": 30,
+    "expansion-rate.duration.seconds": 60,
+
+    "initial-gem-count": 20,
+    "gem-type-count": 4,
+    "minimum-match-size": 3,
+
+    "gem-size": 60,
+    "initial-angular-speed": -0.2
+}

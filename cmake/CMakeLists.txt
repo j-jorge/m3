@@ -5,7 +5,9 @@ enable_testing()
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake-helper" )
 
 include( declare-test )
+include( prepend-string )
 
-set( source_root "${CMAKE_CURRENT_SOURCE_DIR}/../" )
+set( source_root "${CMAKE_CURRENT_SOURCE_DIR}/.." )
 
 add_subdirectory( "modules" )
+add_subdirectory( "app" )
