@@ -33,6 +33,7 @@ target_link_libraries(
   ${M3_ITEMS_LIBRARY_NAME}
   PUBLIC
   m3_core
+  ${CLAW_TWEEN_LIBRARIES}
   )
 
 set(

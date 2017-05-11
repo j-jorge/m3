@@ -5,6 +5,8 @@
 #include "engine/base_item.hpp"
 #include "engine/export.hpp"
 
+#include <claw/tween/tweener.hpp>
+
 namespace m3
 {
   namespace app
@@ -27,6 +29,14 @@ namespace m3
       typedef bear::engine::base_item super;
 
     private:
+      void enter_radius_animation_state();
+      void update_radius();
+      
+      void enter_expansion_state();
+      void update_expansion();
+      
+      float get_ring_radius();
+
       void fill_gem_sprites();
       void initialize_ring();
       
@@ -36,6 +46,9 @@ namespace m3
       std::vector< bear::visual::sprite > m_gem_sprite;
       std::uint64_t m_date;
       m3::gem_ring m_ring;
+      float m_radius;
+      int m_state;
+      claw::tween::tweener m_radius_tweener;
     };
   }
 }

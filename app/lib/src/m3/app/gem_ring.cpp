@@ -5,10 +5,36 @@
 #include "engine/level_globals.hpp"
 #include "visual/scene_sprite.hpp"
 
+#include <claw/tween/single_tweener.hpp>
+#include <claw/tween/easing/easing_back.hpp>
+
+#include <boost/bind.hpp>
+
 BASE_ITEM_EXPORT( gem_ring, m3::app );
 
+namespace m3
+{
+  namespace app
+  {
+    namespace detail
+    {
+      namespace state
+      {
+        static constexpr int radius_animation = 1;
+        static constexpr int expand = 2;
+
+      }
+
+      // TODO: set this constant in m3::match::pi_times_2
+      static constexpr float pi_times_2( 2 * 3.14159265358979323846 );
+    }
+  }
+}
+        
 m3::app::gem_ring::gem_ring()
-  : m_date( 0 )
+  : m_date( 0 ),
+    m_radius( 0 ),
+    m_state( 0 )
 {
   // TODO: use a modern random number generator
   std::srand( std::time( nullptr ) );
@@ -30,6 +56,8 @@ void m3::app::gem_ring::build()
 
   fill_gem_sprites();
   initialize_ring();
+
+  enter_radius_animation_state();
 }
 
 void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
@@ -38,9 +66,63 @@ void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
 
   ++m_date;
   m_ring.set_orientation( get_system_angle() );
-  m_ring.expand( get_expansion_rate() );
 
-  // handle the ring's state
+  switch( m_state )
+    {
+    case detail::state::radius_animation:
+      update_radius();
+      break;
+    case detail::state::expand:
+      update_expansion();
+      break;
+    }
+}
+
+void m3::app::gem_ring::enter_radius_animation_state()
+{
+  m_state = detail::state::radius_animation;
+  
+  static const float resize_duration
+    ( get_config< float >( "resize-duration" ) );
+
+  const auto update_radius_value
+    ( [ this ]( float value ) -> void
+      {
+        m_radius = value;
+      } );
+                                  
+  m_radius_tweener =
+    claw::tween::single_tweener
+    ( m_radius, get_ring_radius(), resize_duration, update_radius_value,
+      &claw::tween::easing_back::ease_out );
+
+  m_radius_tweener.on_finished
+    ( boost::bind( &gem_ring::enter_expansion_state, this ) );
+}
+
+void m3::app::gem_ring::update_radius()
+{
+  m_radius_tweener.update( 1 );
+}
+
+void m3::app::gem_ring::enter_expansion_state()
+{
+  m_state = detail::state::expand;
+}
+
+void m3::app::gem_ring::update_expansion()
+{
+    m_ring.expand( get_expansion_rate() );
+}
+
+float m3::app::gem_ring::get_ring_radius()
+{
+  static const float gem_size( get_config< float >( "gem-size" ) );
+  
+  const std::vector< m3::gem >& gems( m_ring.chain() );
+  const std::size_t count( gems.size() );
+
+  return count * gem_size / detail::pi_times_2;
 }
 
 void m3::app::gem_ring::get_visual
@@ -48,26 +130,21 @@ void m3::app::gem_ring::get_visual
 {
   super::get_visual( visuals );
 
-  // TODO: scale the sprites according to the size of the ring
   static const float gem_size( get_config< float >( "gem-size" ) );
   static const float half_gem_size( gem_size / 2 );
   
-  // TODO: set this constant in m3::match::pi_times_2
-  static constexpr float pi_times_2( 2 * 3.14159265358979323846 );
-
   // TODO: insert the placeholders
   const std::vector< m3::gem >& gems( m_ring.chain() );
   const std::size_t count( gems.size() );
-  const float radius( count * gem_size / pi_times_2 );
   const float orientation( m_ring.get_orientation() );
 
   const bear::universe::position_type center( get_center_of_mass() );
   
   for ( std::size_t i( 0 ); i != count; ++i )
     {
-      const float a( orientation + i * pi_times_2 / count );
-      const float x( center.x + std::cos( a ) * radius - half_gem_size );
-      const float y( center.y + std::sin( a ) * radius - half_gem_size );
+      const float a( orientation + i * detail::pi_times_2 / count );
+      const float x( center.x + std::cos( a ) * m_radius - half_gem_size );
+      const float y( center.y + std::sin( a ) * m_radius - half_gem_size );
 
       visuals.push_back
         ( bear::visual::scene_sprite( x, y, m_gem_sprite[ gems[ i ] ] ) );

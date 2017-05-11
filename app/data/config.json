@@ -11,5 +11,7 @@
     "minimum-match-size": 3,
 
     "gem-size": 60,
-    "initial-angular-speed": -0.2
+    "initial-angular-speed": -0.2,
+
+    "resize-duration": 50
 }
