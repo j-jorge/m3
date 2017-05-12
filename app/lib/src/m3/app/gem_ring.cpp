@@ -303,24 +303,19 @@ void m3::app::gem_ring::initialize_ring()
   
   for ( unsigned int i( 0 ); i != count - 2; ++i )
     {
-      m3::gem gem;
-      bool found( false );
-      
-      while ( !found )
-        {
-          gem = detail::random_gem();
+      m3::gem gem( detail::random_gem() );
 
-          if ( gem != last_gem )
-            {
-              last_count = 1;
-              last_gem = gem;
-              found = true;
-            }
-          else if ( last_count + 1 != match_size )
-            {
-              ++last_count;
-              found = true;
-            }
+      if ( gem != last_gem )
+        {
+          last_count = 1;
+          last_gem = gem;
+        }
+      else if ( last_count + 1 != match_size )
+        ++last_count;
+      else
+        {
+          gem = ( gem + 1 ) % gem_type_count + 1;
+          last_gem = gem;
         }
 
       m_ring.launch( 0, gem );
