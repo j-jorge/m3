@@ -2,6 +2,8 @@
 
 #include "m3/math/circle_section_index.hpp"
 
+#include <cassert>
+
 m3::gem_ring::gem_ring()
   : m_orientation( 0 )
 {
@@ -45,10 +47,11 @@ const std::vector< float >& m3::gem_ring::free_gem_direction() const
   return m_free_gem_direction;
 }
 
-void m3::gem_ring::expand( float d )
+std::size_t m3::gem_ring::expand( float d )
 {
   std::size_t i( 0 );
   auto end( m_free_gem_radius.end() );
+  const std::size_t initial_size( m_chain.size() );
   
   for ( auto it( m_free_gem_radius.begin() ); it != end; )
     {
@@ -77,6 +80,9 @@ void m3::gem_ring::expand( float d )
           ++it;
         }
     }
+
+  assert( initial_size <= m_chain.size() );
+  return m_chain.size() - initial_size;
 }
 
 std::size_t m3::gem_ring::direction_to_chain_index( float d ) const

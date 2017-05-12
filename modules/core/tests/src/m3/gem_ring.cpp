@@ -48,7 +48,8 @@ TEST( gem_ring, expand_one )
   
   ring.launch( direction, g );
 
-  ring.expand( 0.5 );
+  std::size_t inserted( ring.expand( 0.5 ) );
+  EXPECT_EQ( 0, inserted );
 
   {
     const std::vector< m3::gem >& free_gems( ring.free_gems() );
@@ -65,7 +66,8 @@ TEST( gem_ring, expand_one )
     EXPECT_EQ( direction, gem_direction[ 0 ] );
   }
 
-  ring.expand( 0.5 );
+  inserted = ring.expand( 0.5 );
+  EXPECT_EQ( 1, inserted );
 
   {
     EXPECT_TRUE( ring.free_gems().empty() );
@@ -87,13 +89,17 @@ TEST( gem_ring, expand_four )
   const m3::gem g_1( 4 );
   
   ring.launch( direction_1, g_1 );
-  ring.expand( 0.3 );
+
+  std::size_t inserted( ring.expand( 0.3 ) );
+  EXPECT_EQ( 0, inserted );
 
   const float direction_2( 0.8 );
   const m3::gem g_2( 1 );
   
   ring.launch( direction_2, g_2 );
-  ring.expand( 0.4 );
+
+  inserted = ring.expand( 0.4 );
+  EXPECT_EQ( 0, inserted );
 
   const float direction_3( 2.1 );
   const m3::gem g_3( 3 );
@@ -122,7 +128,8 @@ TEST( gem_ring, expand_four )
     EXPECT_FLOAT_EQ( direction_3, gem_direction[ 2 ] );
   }
 
-  ring.expand( 0.3 );
+  inserted = ring.expand( 0.3 );
+  EXPECT_EQ( 1, inserted );
 
   {
     const std::vector< m3::gem >& free_gems( ring.free_gems() );
@@ -149,6 +156,7 @@ TEST( gem_ring, expand_four )
   }
 
   ring.expand( 0.3 );
+  EXPECT_EQ( 1, inserted );
 
   {
     const std::vector< m3::gem >& free_gems( ring.free_gems() );
@@ -172,7 +180,8 @@ TEST( gem_ring, expand_four )
     EXPECT_EQ( g_2, chain[ 0 ] );
   }
 
-  ring.expand( 0.4 );
+  inserted = ring.expand( 0.4 );
+  EXPECT_EQ( 1, inserted );
 
   {
     ASSERT_TRUE( ring.free_gems().empty() );
@@ -245,4 +254,24 @@ TEST( gem_ring, expand_order )
     EXPECT_EQ( g_4, chain[ 1 ] );
     EXPECT_EQ( g_3, chain[ 0 ] );
   }
+}
+
+TEST( gem_ring, expand_four_at_once )
+{
+  m3::gem_ring ring;
+
+  ring.launch( 0.1, m3::gem( 1 ) );
+  ring.launch( 0.2, m3::gem( 2 ) );
+  ring.launch( 0.3, m3::gem( 3 ) );
+      
+  std::size_t inserted( ring.expand( 1 ) );
+  EXPECT_EQ( 3, inserted );
+
+  ring.launch( 0.4, m3::gem( 4 ) );
+  ring.launch( 0.5, m3::gem( 5 ) );
+  ring.launch( 0.6, m3::gem( 6 ) );
+  ring.launch( 0.7, m3::gem( 7 ) );
+      
+  inserted = ring.expand( 1 );
+  EXPECT_EQ( 4, inserted );
 }
