@@ -1,10 +1,8 @@
 {
-    "frame_duration.seconds": 0.1667,
-    
-    "expansion-rate.min": 0.01,
-    "expansion-rate.max": 0.1,
-    "expansion-rate.start_date.seconds": 30,
-    "expansion-rate.duration.seconds": 60,
+    "expansion.per-frame.min": 2,
+    "expansion.per-frame.max": 10,
+    "expansion.speed-up.start-date": 3600,
+    "expansion.speed-up.duration": 18000,
 
     "initial-gem-count": 20,
     "gem-type-count": 4,
@@ -13,5 +11,11 @@
     "gem-size": 60,
     "initial-angular-speed": -0.2,
 
-    "resize-duration": 50
+    "resize-duration": 50,
+
+    "launch.first-date": 120,
+    "launch-interval.min": 50,
+    "launch-interval.max": 300,
+    "launch-speed-up.start-date": 3600,
+    "launch-speed-up.duration": 18000
 }

@@ -27,14 +27,18 @@ namespace m3
 
       // TODO: set this constant in m3::match::pi_times_2
       static constexpr float pi_times_2( 2 * 3.14159265358979323846 );
+
+      static gem random_gem();
     }
   }
 }
         
 m3::app::gem_ring::gem_ring()
   : m_date( 0 ),
+    m_next_launch_date( get_config< unsigned int >( "launch.first-date" ) ),
+    m_coming_next_visual( bear::visual::scene_element() ),
     m_radius( 0 ),
-    m_state( 0 )
+    m_state( detail::state::expand )
 {
   // TODO: use a modern random number generator
   std::srand( std::time( nullptr ) );
@@ -56,7 +60,8 @@ void m3::app::gem_ring::build()
 
   fill_gem_sprites();
   initialize_ring();
-
+  update_coming_next();
+  
   enter_radius_animation_state();
 }
 
@@ -64,7 +69,6 @@ void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
 {
   super::progress( elapsed_time );
 
-  ++m_date;
   m_ring.set_orientation( get_system_angle() );
 
   switch( m_state )
@@ -80,6 +84,8 @@ void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
 
 void m3::app::gem_ring::enter_radius_animation_state()
 {
+  assert( m_state == detail::state::expand );
+  
   m_state = detail::state::radius_animation;
   
   static const float resize_duration
@@ -102,20 +108,86 @@ void m3::app::gem_ring::enter_radius_animation_state()
 
 void m3::app::gem_ring::update_radius()
 {
+  assert( m_state == detail::state::radius_animation );
+  
   m_radius_tweener.update( 1 );
 }
 
 void m3::app::gem_ring::enter_expansion_state()
 {
+  assert( m_state == detail::state::radius_animation );
+  
   m_state = detail::state::expand;
 }
 
 void m3::app::gem_ring::update_expansion()
 {
-    m_ring.expand( get_expansion_rate() );
+  assert( m_state == detail::state::expand );
+  
+  ++m_date;
+  
+  if ( m_date >= m_next_launch_date )
+    {
+      launch_gem();
+      update_coming_next();
+      update_next_launch_date();
+    }
+
+  if ( m_ring.expand( get_expansion_rate() ) != 0 )
+    enter_radius_animation_state();
 }
 
-float m3::app::gem_ring::get_ring_radius()
+void m3::app::gem_ring::launch_gem()
+{
+  assert( m_state == detail::state::expand );
+  
+  const float orientation( detail::pi_times_2 * std::rand() / RAND_MAX );
+  m_ring.launch( orientation, m_coming_next );
+}
+
+void m3::app::gem_ring::update_coming_next()
+{
+  static const float half_gem_size( get_config< float >( "gem-size" ) / 2 );
+  const bear::universe::position_type center( get_center_of_mass() );
+
+  m_coming_next = detail::random_gem();
+  
+  m_coming_next_visual =
+    bear::visual::scene_sprite
+    ( center.x - half_gem_size, center.y - half_gem_size,
+      m_gem_sprite[ m_coming_next ] );
+}
+
+void m3::app::gem_ring::update_next_launch_date()
+{
+  static const float max_interval
+    ( get_config< unsigned int >( "launch-interval.max" ) );
+  static const float start_date
+    ( get_config< float >( "launch-speed-up.start-date" ) );
+
+  if ( m_date < start_date )
+    {
+      m_next_launch_date += max_interval;
+      return;
+    }
+
+  static const float min_interval
+    ( get_config< unsigned int >( "launch-interval.min" ) );
+  static const std::uint64_t duration
+    ( get_config< unsigned int >( "launch-speed-up.duration" ) );
+
+  if ( m_date > start_date + duration )
+    {
+      m_next_launch_date += min_interval;
+      return;
+    }
+  
+  m_next_launch_date +=
+    max_interval
+    - ( m_date - start_date ) * ( max_interval - min_interval ) / duration;
+}
+
+float m3::app::gem_ring::get_ring_radius() const
 {
   static const float gem_size( get_config< float >( "gem-size" ) );
   
@@ -130,6 +202,14 @@ void m3::app::gem_ring::get_visual
 {
   super::get_visual( visuals );
 
+  get_ring_visuals( visuals );
+  get_launched_visuals( visuals );
+  get_launcher_visual( visuals );
+}
+
+void m3::app::gem_ring::get_ring_visuals
+( std::list< bear::engine::scene_visual >& visuals ) const
+{
   static const float gem_size( get_config< float >( "gem-size" ) );
   static const float half_gem_size( gem_size / 2 );
   
@@ -138,17 +218,52 @@ void m3::app::gem_ring::get_visual
   const std::size_t count( gems.size() );
   const float orientation( m_ring.get_orientation() );
 
-  const bear::universe::position_type center( get_center_of_mass() );
+  const bear::universe::position_type center
+    ( get_center_of_mass()
+      - bear::universe::position_type( half_gem_size, half_gem_size ) );
   
   for ( std::size_t i( 0 ); i != count; ++i )
     {
       const float a( orientation + i * detail::pi_times_2 / count );
-      const float x( center.x + std::cos( a ) * m_radius - half_gem_size );
-      const float y( center.y + std::sin( a ) * m_radius - half_gem_size );
+      const float x( center.x + std::cos( a ) * m_radius );
+      const float y( center.y + std::sin( a ) * m_radius );
 
       visuals.push_back
         ( bear::visual::scene_sprite( x, y, m_gem_sprite[ gems[ i ] ] ) );
     }
+}
+
+void m3::app::gem_ring::get_launched_visuals
+( std::list< bear::engine::scene_visual >& visuals ) const
+{
+  static const float gem_size( get_config< float >( "gem-size" ) );
+  static const float half_gem_size( gem_size / 2 );
+  
+  const std::vector< m3::gem >& gems( m_ring.free_gems() );
+  const std::vector< float >& radius( m_ring.free_gem_radius() );
+  const std::vector< float >& direction( m_ring.free_gem_direction() );
+
+  const std::size_t count( gems.size() );
+  const bear::universe::position_type center
+    ( get_center_of_mass()
+      - bear::universe::position_type( half_gem_size, half_gem_size ) );
+
+  for ( std::size_t i( 0 ); i != count; ++i )
+    {
+      const float a( direction[ i ] );
+      const float r( radius[ i ] * m_radius );
+      const float x( center.x + std::cos( a ) * r );
+      const float y( center.y + std::sin( a ) * r );
+
+      visuals.push_back
+        ( bear::visual::scene_sprite( x, y, m_gem_sprite[ gems[ i ] ] ) );
+    }
+}
+
+void m3::app::gem_ring::get_launcher_visual
+( std::list< bear::engine::scene_visual >& visuals ) const
+{
+  visuals.push_back( m_coming_next_visual );
 }
 
 void m3::app::gem_ring::fill_gem_sprites()
@@ -180,7 +295,7 @@ void m3::app::gem_ring::initialize_ring()
     ( get_config< unsigned int >( "minimum-match-size" ) );
 
   // TODO: move this in a utility function such that it can be tested.
-  const m3::gem first_gem( std::rand() % gem_type_count + 1 );
+  const m3::gem first_gem( detail::random_gem() );
   m_ring.launch( 0, first_gem );
 
   m3::gem last_gem( first_gem );
@@ -193,7 +308,7 @@ void m3::app::gem_ring::initialize_ring()
       
       while ( !found )
         {
-          gem = std::rand() % gem_type_count + 1;
+          gem = detail::random_gem();
 
           if ( gem != last_gem )
             {
@@ -211,7 +326,7 @@ void m3::app::gem_ring::initialize_ring()
       m_ring.launch( 0, gem );
     }
 
-  m3::gem final_gem( std::rand() % gem_type_count + 1 );
+  m3::gem final_gem( detail::random_gem() );
 
   if ( final_gem == first_gem )
     final_gem = ( first_gem + 1 ) % gem_type_count + 1;
@@ -223,25 +338,35 @@ void m3::app::gem_ring::initialize_ring()
 
 float m3::app::gem_ring::get_expansion_rate() const
 {
-  static const float min_rate
-    ( get_config< float >( "expansion-rate.min" ) );
-  static const float frame_duration
-    ( get_config< float >( "frame_duration.seconds" ) );
+  return get_expansion_speed() / m_radius;
+}
+
+float m3::app::gem_ring::get_expansion_speed() const
+{
+  static const float min_speed
+    ( get_config< float >( "expansion.per-frame.min" ) );
   static const float start_date
-    ( get_config< float >( "expansion-rate.start_date.seconds" )
-      * frame_duration );
+    ( get_config< float >( "expansion.speed-up.start-date" ) );
 
   if ( m_date < start_date )
-    return min_rate;
+    return min_speed;
   
-  static const float max_rate
-    ( get_config< float >( "expansion-rate.max" ) );
+  static const float max_speed
+    ( get_config< float >( "expansion.per-frame.max" ) );
   static const std::uint64_t duration
-    ( get_config< unsigned int >( "expansion-rate.duration.seconds" )
-      * frame_duration );
+    ( get_config< unsigned int >( "expansion.speed-up.duration" ) );
 
   if ( m_date > start_date + duration )
-    return max_rate;
+    return max_speed;
   
-  return min_rate + ( m_date - start_date ) * ( max_rate - min_rate );
+  return
+    min_speed + ( m_date - start_date ) * ( max_speed - min_speed ) / duration;
+}
+
+m3::gem m3::app::detail::random_gem()
+{
+  static const unsigned int gem_type_count
+    ( get_config< unsigned int >( "gem-type-count" ) );
+
+  return std::rand() % gem_type_count + 1;
 }
