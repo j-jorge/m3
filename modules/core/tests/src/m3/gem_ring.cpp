@@ -275,3 +275,69 @@ TEST( gem_ring, expand_four_at_once )
   inserted = ring.expand( 1 );
   EXPECT_EQ( 4, inserted );
 }
+
+TEST( gem_ring, erase )
+{
+  m3::gem_ring ring;
+
+  const m3::gem g_1( 4 );
+
+  ring.launch( 0, g_1 );
+  ring.expand( 1 );
+
+  const m3::gem g_2( 1 );
+
+  ring.launch( 0, g_2 );
+  ring.expand( 1 );
+
+  const m3::gem g_3( 2 );
+
+  ring.launch( 0, g_3 );
+  ring.expand( 1 );
+
+  const m3::gem g_4( 7 );
+  
+  ring.launch( 2.1, g_4 );
+  ring.expand( 1 );
+
+  const m3::gem g_5( 55 );
+  
+  ring.launch( 4.713, g_5 );
+  ring.expand( 1 );
+
+  {
+    const std::vector< m3::gem >& chain( ring.chain() );
+
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_3, chain[ 1 ] );
+    EXPECT_EQ( g_4, chain[ 2 ] );
+    EXPECT_EQ( g_2, chain[ 3 ] );
+    EXPECT_EQ( g_5, chain[ 4 ] );
+  }
+
+  ring.erase( { 1, 3 } );
+
+  {
+    const std::vector< m3::gem >& chain( ring.chain() );
+
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_4, chain[ 1 ] );
+    EXPECT_EQ( g_5, chain[ 2 ] );
+  }
+
+  ring.erase( { 0, 2 } );
+
+  {
+    const std::vector< m3::gem >& chain( ring.chain() );
+
+    EXPECT_EQ( g_4, chain[ 1 ] );
+  }
+
+  ring.erase( { 0 } );
+
+  {
+    const std::vector< m3::gem >& chain( ring.chain() );
+
+    EXPECT_TRUE( chain.empty() );
+  }
+}

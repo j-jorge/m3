@@ -15,7 +15,8 @@ namespace m3
     void set_orientation( float orientation );
 
     void launch( float direction, gem g );
-
+    void erase( const std::vector< std::size_t >& indices );
+    
     const std::vector< gem >& chain() const;
 
     const std::vector< gem >& free_gems() const;

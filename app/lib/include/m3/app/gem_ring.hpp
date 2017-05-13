@@ -37,7 +37,9 @@ namespace m3
       ( std::list< bear::engine::scene_visual >& visuals ) const;
 
       void enter_radius_animation_state();
+      void animate_radius_change();
       void update_radius();
+      void complete_radius_state();
       
       void enter_expansion_state();
       void update_expansion();
@@ -45,6 +47,8 @@ namespace m3
       void launch_gem();
       void update_coming_next();
       void update_next_launch_date();
+
+      bool remove_matches();
       
       float get_ring_radius() const;
 

@@ -1,6 +1,8 @@
 #include "m3/app/gem_ring.hpp"
 
 #include "m3/app/config/get_config.hpp"
+
+#include "m3/find_adjacent_ring_gems.hpp"
 #include "m3/math/pi_times_2.hpp"
 
 #include "engine/level_globals.hpp"
@@ -82,9 +84,14 @@ void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
 void m3::app::gem_ring::enter_radius_animation_state()
 {
   assert( m_state == detail::state::expand );
-  
+
   m_state = detail::state::radius_animation;
   
+  animate_radius_change();
+}
+
+void m3::app::gem_ring::animate_radius_change()
+{
   static const float resize_duration
     ( get_config< float >( "resize-duration" ) );
 
@@ -100,7 +107,7 @@ void m3::app::gem_ring::enter_radius_animation_state()
       &claw::tween::easing_back::ease_out );
 
   m_radius_tweener.on_finished
-    ( boost::bind( &gem_ring::enter_expansion_state, this ) );
+    ( boost::bind( &gem_ring::complete_radius_state, this ) );
 }
 
 void m3::app::gem_ring::update_radius()
@@ -110,10 +117,17 @@ void m3::app::gem_ring::update_radius()
   m_radius_tweener.update( 1 );
 }
 
+void m3::app::gem_ring::complete_radius_state()
+{
+  if ( remove_matches() )
+    animate_radius_change();
+  else
+    enter_expansion_state();
+}
+
 void m3::app::gem_ring::enter_expansion_state()
 {
   assert( m_state == detail::state::radius_animation );
-  
   m_state = detail::state::expand;
 }
 
@@ -131,7 +145,10 @@ void m3::app::gem_ring::update_expansion()
     }
 
   if ( m_ring.expand( get_expansion_rate() ) != 0 )
-    enter_radius_animation_state();
+    {
+      remove_matches();
+      enter_radius_animation_state();
+    }
 }
 
 void m3::app::gem_ring::launch_gem()
@@ -182,6 +199,19 @@ void m3::app::gem_ring::update_next_launch_date()
   m_next_launch_date +=
     max_interval
     - ( m_date - start_date ) * ( max_interval - min_interval ) / duration;
+}
+
+bool m3::app::gem_ring::remove_matches()
+{
+  static const std::size_t match_size
+    ( get_config< unsigned int >( "minimum-match-size" ) );
+
+  const std::vector< std::size_t > matches
+    ( m3::find_adjacent_ring_gems( m_ring.chain(), match_size ) );
+
+  m_ring.erase( matches );
+
+  return !matches.empty();
 }
 
 float m3::app::gem_ring::get_ring_radius() const

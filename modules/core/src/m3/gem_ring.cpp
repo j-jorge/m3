@@ -3,6 +3,7 @@
 #include "m3/math/circle_section_index.hpp"
 #include "m3/math/pi_times_2.hpp"
 
+#include <algorithm>
 #include <cassert>
 
 m3::gem_ring::gem_ring()
@@ -26,6 +27,16 @@ void m3::gem_ring::launch( float direction, gem g )
   m_free_gems.push_back( g );
   m_free_gem_radius.push_back( 0 );
   m_free_gem_direction.push_back( direction );
+}
+
+void m3::gem_ring::erase( const std::vector< std::size_t >& indices )
+{
+  assert( std::is_sorted( indices.begin(), indices.end() ) );
+
+  const auto end( indices.rend() );
+
+  for( auto it( indices.rbegin() ); it != end; ++it )
+    m_chain.erase( m_chain.begin() + *it );
 }
 
 const std::vector< m3::gem >& m3::gem_ring::chain() const
