@@ -1,6 +1,7 @@
 #include "m3/app/gem_ring.hpp"
 
 #include "m3/app/config/get_config.hpp"
+#include "m3/math/pi_times_2.hpp"
 
 #include "engine/level_globals.hpp"
 #include "visual/scene_sprite.hpp"
@@ -22,11 +23,7 @@ namespace m3
       {
         static constexpr int radius_animation = 1;
         static constexpr int expand = 2;
-
       }
-
-      // TODO: set this constant in m3::match::pi_times_2
-      static constexpr float pi_times_2( 2 * 3.14159265358979323846 );
 
       static gem random_gem();
     }
@@ -141,21 +138,21 @@ void m3::app::gem_ring::launch_gem()
 {
   assert( m_state == detail::state::expand );
   
-  const float orientation( detail::pi_times_2 * std::rand() / RAND_MAX );
+  const float orientation( m3::math::pi_times_2 * std::rand() / RAND_MAX );
   m_ring.launch( orientation, m_coming_next );
 }
 
 void m3::app::gem_ring::update_coming_next()
 {
-  static const float half_gem_size( get_config< float >( "gem-size" ) / 2 );
   const bear::universe::position_type center( get_center_of_mass() );
 
   m_coming_next = detail::random_gem();
+
+  const bear::visual::sprite& s( m_gem_sprite[ m_coming_next ] );
   
   m_coming_next_visual =
     bear::visual::scene_sprite
-    ( center.x - half_gem_size, center.y - half_gem_size,
-      m_gem_sprite[ m_coming_next ] );
+    ( center.x - s.width() / 2, center.y - s.height() / 2, s );
 }
 
 void m3::app::gem_ring::update_next_launch_date()
@@ -194,7 +191,7 @@ float m3::app::gem_ring::get_ring_radius() const
   const std::vector< m3::gem >& gems( m_ring.chain() );
   const std::size_t count( gems.size() );
 
-  return count * gem_size / detail::pi_times_2;
+  return count * gem_size / m3::math::pi_times_2;
 }
 
 void m3::app::gem_ring::get_visual
@@ -207,56 +204,47 @@ void m3::app::gem_ring::get_visual
   get_launcher_visual( visuals );
 }
 
+#include "m3/math/circle_section_index.hpp"
+
 void m3::app::gem_ring::get_ring_visuals
 ( std::list< bear::engine::scene_visual >& visuals ) const
 {
-  static const float gem_size( get_config< float >( "gem-size" ) );
-  static const float half_gem_size( gem_size / 2 );
-  
-  // TODO: insert the placeholders
   const std::vector< m3::gem >& gems( m_ring.chain() );
-  const std::size_t count( gems.size() );
   const float orientation( m_ring.get_orientation() );
+  const std::size_t count( gems.size() );
 
-  const bear::universe::position_type center
-    ( get_center_of_mass()
-      - bear::universe::position_type( half_gem_size, half_gem_size ) );
+  const bear::universe::position_type center( get_center_of_mass() );
   
   for ( std::size_t i( 0 ); i != count; ++i )
     {
-      const float a( orientation + i * detail::pi_times_2 / count );
-      const float x( center.x + std::cos( a ) * m_radius );
-      const float y( center.y + std::sin( a ) * m_radius );
+      const bear::visual::sprite& s( m_gem_sprite[ gems[ i ] ] );
+      const float a( orientation + i * m3::math::pi_times_2 / count );
+      const float x( center.x + std::cos( a ) * m_radius - s.width() / 2 );
+      const float y( center.y + std::sin( a ) * m_radius - s.height() / 2 );
 
-      visuals.push_back
-        ( bear::visual::scene_sprite( x, y, m_gem_sprite[ gems[ i ] ] ) );
+      visuals.push_back( bear::visual::scene_sprite( x, y, s ) );
     }
 }
 
 void m3::app::gem_ring::get_launched_visuals
 ( std::list< bear::engine::scene_visual >& visuals ) const
 {
-  static const float gem_size( get_config< float >( "gem-size" ) );
-  static const float half_gem_size( gem_size / 2 );
-  
   const std::vector< m3::gem >& gems( m_ring.free_gems() );
   const std::vector< float >& radius( m_ring.free_gem_radius() );
   const std::vector< float >& direction( m_ring.free_gem_direction() );
 
   const std::size_t count( gems.size() );
-  const bear::universe::position_type center
-    ( get_center_of_mass()
-      - bear::universe::position_type( half_gem_size, half_gem_size ) );
+  const bear::universe::position_type center( get_center_of_mass() );
 
   for ( std::size_t i( 0 ); i != count; ++i )
     {
+      const bear::visual::sprite& s( m_gem_sprite[ gems[ i ] ] );
       const float a( direction[ i ] );
       const float r( radius[ i ] * m_radius );
-      const float x( center.x + std::cos( a ) * r );
-      const float y( center.y + std::sin( a ) * r );
+      const float x( center.x + std::cos( a ) * r - s.width() / 2 );
+      const float y( center.y + std::sin( a ) * r - s.height() / 2 );
 
-      visuals.push_back
-        ( bear::visual::scene_sprite( x, y, m_gem_sprite[ gems[ i ] ] ) );
+      visuals.push_back( bear::visual::scene_sprite( x, y, s ) );
     }
 }
 
@@ -324,8 +312,11 @@ void m3::app::gem_ring::initialize_ring()
   m3::gem final_gem( detail::random_gem() );
 
   if ( final_gem == first_gem )
-    final_gem = ( first_gem + 1 ) % gem_type_count + 1;
+    final_gem = ( final_gem + 1 ) % gem_type_count + 1;
 
+  if ( final_gem == last_gem )
+    final_gem = ( final_gem + 1 ) % gem_type_count + 1;
+  
   m_ring.launch( 0, final_gem );
   
   m_ring.expand( 1 );

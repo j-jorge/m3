@@ -176,8 +176,8 @@ TEST( gem_ring, expand_four )
     const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 2, chain.size() );
-    EXPECT_EQ( g_1, chain[ 1 ] );
-    EXPECT_EQ( g_2, chain[ 0 ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_2, chain[ 1 ] );
   }
 
   inserted = ring.expand( 0.4 );
@@ -191,9 +191,9 @@ TEST( gem_ring, expand_four )
     const std::vector< m3::gem >& chain( ring.chain() );
 
     ASSERT_EQ( 3, chain.size() );
-    EXPECT_EQ( g_1, chain[ 2 ] );
-    EXPECT_EQ( g_2, chain[ 1 ] );
-    EXPECT_EQ( g_3, chain[ 0 ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_2, chain[ 2 ] );
+    EXPECT_EQ( g_3, chain[ 1 ] );
   }
 }
 
@@ -219,9 +219,9 @@ TEST( gem_ring, expand_order )
   {
     const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, chain[ 2 ] );
-    EXPECT_EQ( g_2, chain[ 1 ] );
-    EXPECT_EQ( g_3, chain[ 0 ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_3, chain[ 1 ] );
+    EXPECT_EQ( g_2, chain[ 2 ] );
   }
 
   const m3::gem g_4( 7 );
@@ -233,10 +233,10 @@ TEST( gem_ring, expand_order )
   {
     const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, chain[ 3 ] );
-    EXPECT_EQ( g_2, chain[ 2 ] );
-    EXPECT_EQ( g_4, chain[ 1 ] );
-    EXPECT_EQ( g_3, chain[ 0 ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_3, chain[ 1 ] );
+    EXPECT_EQ( g_4, chain[ 2 ] );
+    EXPECT_EQ( g_2, chain[ 3 ] );
   }
 
   const m3::gem g_5( 55 );
@@ -248,11 +248,11 @@ TEST( gem_ring, expand_order )
   {
     const std::vector< m3::gem >& chain( ring.chain() );
 
-    EXPECT_EQ( g_1, chain[ 4 ] );
-    EXPECT_EQ( g_5, chain[ 3 ] );
-    EXPECT_EQ( g_2, chain[ 2 ] );
-    EXPECT_EQ( g_4, chain[ 1 ] );
-    EXPECT_EQ( g_3, chain[ 0 ] );
+    EXPECT_EQ( g_1, chain[ 0 ] );
+    EXPECT_EQ( g_3, chain[ 1 ] );
+    EXPECT_EQ( g_4, chain[ 2 ] );
+    EXPECT_EQ( g_2, chain[ 3 ] );
+    EXPECT_EQ( g_5, chain[ 4 ] );
   }
 }
 

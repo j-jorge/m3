@@ -1,6 +1,7 @@
 #include "m3/gem_ring.hpp"
 
 #include "m3/math/circle_section_index.hpp"
+#include "m3/math/pi_times_2.hpp"
 
 #include <cassert>
 
