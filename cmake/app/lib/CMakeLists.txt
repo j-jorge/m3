@@ -8,6 +8,7 @@ prepend_string(
   M3_ITEMS_FILES
   "${source_root}/app/lib/src/m3/app/"
   gem_ring.cpp
+  input_controller.cpp
 
   config/get_config.cpp
   )

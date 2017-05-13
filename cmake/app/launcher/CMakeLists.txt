@@ -35,6 +35,7 @@ target_link_libraries(
   m3_items
   bear_generic_items
   bear_engine
+  bear_input
   bear_text_interface
   bear_universe
   bear_visual
