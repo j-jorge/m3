@@ -22,4 +22,10 @@ target_link_libraries(
   m3_stl
   )
 
+install(
+  TARGETS m3_core
+  DESTINATION ${M3_INSTALL_LIBRARY_DIR}
+  )
+
 add_subdirectory( tests )
+

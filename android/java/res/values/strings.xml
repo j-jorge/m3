@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name" translatable="false">M3</string>
+  <string name="facebook_app_id" translatable="false">fb</string>
+  <string name="hockeyapp_app_id" translatable="false">12345678901234567890123456789012</string>
+
+  <string name="notification_title_1">Play!</string>
+  <string name="notification_message_1">Tap to play!</string>
+
+  <string name="notification_title_2">Play now!</string>
+  <string name="notification_message_2">Come on!</string>
+
+  <string name="notification_title_3">PLAY!</string>
+  <string name="notification_message_3">You did very well!</string>
+
+  <string name="notification_title_4">PLAY NOW!</string>
+  <string name="notification_message_4">It\'s awesome!</string>
+  
+  <string name="rate_app_title">Rate our game</string>
+  <string name="rate_app_message">If you love our game, please take a moment to rate it in the Play Store</string>
+  <string name="rate_app_yes">Rate now</string>
+  <string name="rate_app_cancel">Later</string>
+  <string name="rate_app_contact">Contact</string>
+
+</resources>

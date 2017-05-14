@@ -14,4 +14,9 @@ target_include_directories(
   "${math_module_root}/include"
   )
 
+install(
+  TARGETS m3_math
+  DESTINATION ${M3_INSTALL_LIBRARY_DIR}
+  )
+
 add_subdirectory( tests )

@@ -19,8 +19,10 @@
     "launch-speed-up.start-date": 3600,
     "launch-speed-up.duration": 18000,
 
+    "input.move.threshold": 2,
     "input.velocity.motionless.threshold": 0.3,
-    "input.velocity.random.min": 0.1,
+    "input.velocity.min": 0.1,
+    "input.velocity.max": 3,
     "input.velocity.random.max": 0.2,
 
     "camera.margin": 100,

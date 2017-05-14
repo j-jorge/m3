@@ -31,7 +31,14 @@ target_include_directories(
   "${source_root}/app/lib/include"
   "${BEAR_ENGINE_INCLUDE_DIRECTORY}"
   "${BEAR_ITEMS_INCLUDE_DIRECTORY}"
+  "${CLAW_INCLUDE_DIRECTORY}"
   )
+
+link_directories(
+  ${M3_ITEMS_LIBRARY_NAME}
+  PUBLIC
+  ${BEAR_ENGINE_LINK_DIRECTORY}
+)
 
 target_link_libraries(
   ${M3_ITEMS_LIBRARY_NAME}
@@ -45,7 +52,7 @@ target_link_libraries(
   ${CLAW_TWEEN_LIBRARIES}
   )
 
-set(
-  M3_ITEMS_LIBRARY_PATH
-  "${CMAKE_CURRENT_BINARY_DIR}/lib${M3_ITEMS_LIBRARY_PATH}.so"
+install(
+  TARGETS ${M3_ITEMS_LIBRARY_NAME}
+  DESTINATION ${M3_INSTALL_LIBRARY_DIR}
   )

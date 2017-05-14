@@ -41,7 +41,8 @@ const rapidjson::Document& m3::app::detail::get_config()
 rapidjson::Document m3::app::detail::load_config()
 {
   std::stringstream s;
-  bear::engine::resource_pool::get_instance().get_file( "config.json", s );
+  bear::engine::resource_pool::get_instance().get_file
+    ( "config/global.json", s );
 
   rapidjson::Document result;
 

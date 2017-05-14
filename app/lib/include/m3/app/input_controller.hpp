@@ -51,6 +51,7 @@ namespace m3
       bear::universe::time_type m_speed_reference_date;
       double m_speed_reference_angle;
       bear::universe::time_type m_last_move_date;
+      bear::universe::position_type m_last_move_position;
       double m_angle_offset;
       bool m_moving_clockwise;
     };

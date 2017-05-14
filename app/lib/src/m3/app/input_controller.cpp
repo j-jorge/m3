@@ -64,12 +64,16 @@ bool m3::app::input_controller::finger_action
     case bear::input::finger_event::event_type::finger_event_pressed:
       down( event.get_position() );
       return true;
+      
     case bear::input::finger_event::event_type::finger_event_motion:
-      move( event.get_position() );
+      if ( ( event.get_distance().x != 0 ) || ( event.get_distance().y != 0 ) )
+        move( event.get_position() );
       return true;
+      
     case bear::input::finger_event::event_type::finger_event_released:
       up( event.get_position() );
       return true;
+      
     default:
       assert( false );
     }
@@ -90,12 +94,20 @@ void m3::app::input_controller::down
   
   m_down = true;
   m_last_move_date = m_speed_reference_date;
+  m_last_move_position = position;
   m_ring->set_angular_speed( 0 );
 }
 
 void m3::app::input_controller::move
 ( const bear::universe::position_type& position )
 {
+  static const float move_threshold
+    ( get_config< float >( "input.move.threshold" ) );
+  
+  if ( ( std::abs( position.x - m_last_move_position.x ) < move_threshold )
+       && ( std::abs( position.y - m_last_move_position.y ) < move_threshold ) )
+    return;
+  
   const bear::universe::position_type direction
     ( get_level().screen_to_level( position ) - m_ring->get_center_of_mass() );
 
@@ -116,6 +128,7 @@ void m3::app::input_controller::move
     }
 
   m_last_move_date = now;
+  m_last_move_position = position;
 }
 
 void m3::app::input_controller::up
@@ -133,23 +146,29 @@ void m3::app::input_controller::up
   double speed( 0 );
   
   if ( ( m_last_move_date - now <= motionless_threshold )
-       || ( movement_duration > 0 ) )
+       && ( movement_duration > 0 ) )
     speed =
       ( m_ring->get_system_angle() - m_speed_reference_angle )
       / movement_duration;
-
+  
   static const float min_velocity
-    ( get_config< float >( "input.velocity.random.min" ) );
+    ( get_config< float >( "input.velocity.min" ) );
+  static const float max_velocity
+    ( get_config< float >( "input.velocity.max" ) );
 
-  if ( std::abs( speed ) < min_velocity )
+  if ( speed > max_velocity )
+    speed = max_velocity;
+  else if ( speed < -max_velocity )
+    speed = -max_velocity;
+  else if ( std::abs( speed ) < min_velocity )
     {
-      static const float max_velocity
+      static const float max_random_velocity
         ( get_config< float >( "input.velocity.random.max" ) );
 
       speed =
         ( m_moving_clockwise ? -1 : 1 )
         * ( min_velocity
-            + rand() / RAND_MAX * ( max_velocity - min_velocity ) );
+            + rand() / RAND_MAX * ( max_random_velocity - min_velocity ) );
     }
 
   m_ring->set_angular_speed( speed );

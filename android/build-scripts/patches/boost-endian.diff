@@ -1,0 +1,12 @@
+diff -u -r boost_1_55_0/boost/predef/other/endian.h boost_1_55_0.patched/boost/predef/other/endian.h
+--- boost/predef/other/endian.h
++++ boost/predef/other/endian.h
+@@ -53,7 +53,7 @@
+  */
+ #if !BOOST_ENDIAN_BIG_BYTE && !BOOST_ENDIAN_BIG_WORD && \
+     !BOOST_ENDIAN_LITTLE_BYTE && !BOOST_ENDIAN_LITTLE_WORD
+-#   if BOOST_LIB_C_GNU
++#   if BOOST_LIB_C_GNU || defined(ANDROID) || defined(__ANDROID__)
+ #       include <endian.h>
+ #   else
+ #       if BOOST_OS_MACOS

@@ -9,10 +9,37 @@ prepend_string(
   main.cpp
   )
 
-add_executable(
-  ${M3_LAUNCHER_TARGET_NAME}
-  ${M3_LAUNCHER_FILES}
-  )
+if( BUILD_PLATFORM STREQUAL "android" )
+  set(
+    M3_LAUNCHER_FILES
+    ${M3_LAUNCHER_FILES}
+    "${source_root}/app/launcher/src/m3/app/android/breakpad.cpp"
+    )
+
+  add_library(
+    ${M3_LAUNCHER_TARGET_NAME}
+    ${M3_LAUNCHER_FILES}
+    )
+
+  target_include_directories(
+    ${M3_LAUNCHER_TARGET_NAME}
+    PRIVATE
+    ${ANDROID_BREAKPAD_INCLUDE_DIRECTORY}
+    ${ANDROID_BREAKPAD_INCLUDE_DIRECTORY}/src/common/android/include
+    )
+  
+  target_link_libraries(
+    ${M3_LAUNCHER_TARGET_NAME}
+
+    ${ANDROID_BREAKPAD_LIBRARIES}
+    )
+
+else()
+  add_executable(
+    ${M3_LAUNCHER_TARGET_NAME}
+    ${M3_LAUNCHER_FILES}
+    )
+endif()
 
 target_include_directories(
   ${M3_LAUNCHER_TARGET_NAME}

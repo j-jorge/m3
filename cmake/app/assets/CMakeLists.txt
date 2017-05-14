@@ -1,6 +1,7 @@
 project( m3-assets )
 
-set( M3_DATA_DIRECTORY "${source_root}/app/data" PARENT_SCOPE )
+set( M3_DATA_DIRECTORY "${source_root}/app/data" )
+set( M3_DATA_DIRECTORY "${M3_DATA_DIRECTORY}" PARENT_SCOPE )
 set( M3_ASSETS_DIRECTORY "${source_root}/app/assets" )
 
 function( sprite_sheet BASENAME )
@@ -58,3 +59,18 @@ prepend_string(
   )
 
 sprite_sheet( gfx/sprites FILES ${M3_GEM_FILES} )
+
+if ( NOT M3_INSTALL_DATA_DIR )
+  set( M3_INSTALL_DATA_DIR "share/m3" )
+endif()
+
+install(
+  DIRECTORY "${M3_DATA_DIRECTORY}/gfx" "${M3_DATA_DIRECTORY}/config"
+  DESTINATION ${M3_INSTALL_DATA_DIR}
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE
+  GROUP_READ
+  WORLD_READ
+  DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+  GROUP_READ GROUP_EXECUTE
+  WORLD_READ WORLD_EXECUTE
+)

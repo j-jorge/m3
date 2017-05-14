@@ -13,4 +13,8 @@ download_project(
   ${UPDATE_DISCONNECTED_IF_AVAILABLE}
   )
 
-add_subdirectory( ${google-test_SOURCE_DIR} ${google-test_BINARY_DIR} )
+add_subdirectory(
+  ${google-test_SOURCE_DIR}
+  ${google-test_BINARY_DIR}
+  EXCLUDE_FROM_ALL
+  )

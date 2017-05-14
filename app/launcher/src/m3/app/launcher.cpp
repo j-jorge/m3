@@ -10,8 +10,27 @@
 
 #include <libintl.h>
 
+#ifdef __ANDROID__
+#include "engine/resource_pool.hpp"
+#include "engine/resource_pool/android_resource_pool.hpp"
+
+#include <claw/android_logger.hpp>
+#include <claw/log_stream_uniq.hpp>
+#endif
+
 #define m3_launch_argument( arg, value )        \
   arg BOOST_PP_STRINGIZE( value )
+
+namespace m3
+{
+  namespace app
+  {
+    namespace detail
+    {
+      static void initialize_logger();
+    }
+  }
+}
 
 m3::app::launcher::launcher( int& argc, char** &argv )
   : claw::application(argc, argv)
@@ -31,6 +50,8 @@ m3::app::launcher::~launcher() = default;
 
 int m3::app::launcher::run()
 {
+  detail::initialize_logger();
+  
   try
     {
       if ( m_game != nullptr )
@@ -62,10 +83,10 @@ void m3::app::launcher::create_game( int& argc, char** &argv )
       "--screen-height=1280",
       "--active-area=250",
 
-      m3_launch_argument( "--data-path=", M3_DATA_DIRECTORY ),
-
 #ifdef __ANDROID__
       "--fullscreen",
+#else
+      m3_launch_argument( "--data-path=", M3_DATA_DIRECTORY ),
 #endif
 
       "--auto-load-symbols",
@@ -90,6 +111,11 @@ void m3::app::launcher::create_game( int& argc, char** &argv )
     {
       char** engine_args = const_cast< char** >(final_args);
       m_game.reset( new bear::engine::game( final_argc, engine_args ) );
+
+#ifdef __ANDROID__
+      bear::engine::resource_pool::get_instance().add_pool
+        ( new bear::engine::android_resource_pool );                     
+#endif
     }
   catch( const std::exception& e )
     {
@@ -105,4 +131,21 @@ void m3::app::launcher::help() const
   m_arguments.help( gettext("engine_options") );
   std::cout << '\n';
   bear::engine::game::print_help();
+}
+
+void m3::app::detail::initialize_logger()
+{
+#ifdef __ANDROID__
+  claw::log_stream* const logger
+    ( new claw::log_stream_uniq( new claw::android_logger( "M3" ) ) );
+  
+  claw::logger.set( logger );
+  
+#ifndef NDEBUG
+  claw::logger.set_level( claw::log_verbose );
+#else
+  claw::logger.set_level( claw::log_error );
+#endif
+
+#endif
 }

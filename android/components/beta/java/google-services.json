@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "404172593169",
+    "firebase_url": "https://m3-beta.firebaseio.com",
+    "project_id": "m3-beta",
+    "storage_bucket": "m3-beta.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404172593169:android:4dc0d26211f10291",
+        "android_client_info": {
+          "package_name": "com.stuffomatic.beta.m3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "404172593169-fp7mmbip63a1al97unge4qnf5idn8ch3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaqxcOdZ15mDbUgtqphWWg9HiXTC6oY8M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
