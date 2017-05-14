@@ -2,7 +2,9 @@ CFLAGS := -Wall -Wno-sign-compare -fdiagnostics-color=always
 CXXFLAGS := $(CFLAGS) --std=c++11
 LDFLAGS := 
 
-BUILD ?= $(shell [ -f build/last_build_type ] && cat build/last_build_type)
+BUILD_TYPE_TAG := build/linux/last_build_type
+
+BUILD ?= $(shell [ -f $(BUILD_TYPE_TAG) ] && cat $(BUILD_TYPE_TAG))
 
 CMAKE_BUILD_TYPE := 
 
@@ -15,7 +17,7 @@ else
   CMAKE_BUILD_TYPE := debug
 endif
 
-BUILD_DIR := build/$(CMAKE_BUILD_TYPE)
+BUILD_DIR := build/linux/$(CMAKE_BUILD_TYPE)
 CMAKE_ARGS := -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) \
 	-DBEAR_ROOT_DIRECTORY=$(shell pwd)/../bear
 
@@ -37,13 +39,13 @@ target: .cmake
 .cmake: .build_marker
 	cd $(BUILD_DIR) \
 	  && CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	     cmake ../../cmake $(CMAKE_ARGS)
+	     cmake ../../../cmake $(CMAKE_ARGS)
 
 .build_marker: $(BUILD_DIR)
-	echo $(BUILD) > build/last_build_type
+	echo $(BUILD) > $(BUILD_TYPE_TAG)
 
 $(BUILD_DIR):
 	[ -d $(BUILD_DIR) ] || mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -fr build
+	rm -fr $(BUILD_DIR)
