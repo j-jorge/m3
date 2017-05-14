@@ -4,7 +4,7 @@
     "expansion.speed-up.start-date": 3600,
     "expansion.speed-up.duration": 18000,
 
-    "initial-gem-count": 20,
+    "initial-gem-count": 40,
     "gem-type-count": 4,
     "minimum-match-size": 3,
 
@@ -21,5 +21,11 @@
 
     "input.velocity.motionless.threshold": 0.3,
     "input.velocity.random.min": 0.1,
-    "input.velocity.random.max": 0.2
+    "input.velocity.random.max": 0.2,
+
+    "camera.margin": 100,
+    "camera.minimal_width": 720,
+
+    "level.width": 7200,
+    "level.height": 12800
 }

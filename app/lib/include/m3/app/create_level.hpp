@@ -12,6 +12,6 @@ namespace m3
 {
   namespace app
   {
-    bear::engine::level* create_initial_level();
+    bear::engine::level* create_level();
   }
 }

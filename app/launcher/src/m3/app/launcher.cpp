@@ -1,6 +1,6 @@
 #include "m3/app/launcher.hpp"
 
-#include "m3/app/create_initial_level.hpp"
+#include "m3/app/create_level.hpp"
 
 #include "engine/game.hpp"
 
@@ -35,7 +35,7 @@ int m3::app::launcher::run()
     {
       if ( m_game != nullptr )
         {
-          m_game->set_waiting_level( create_initial_level() );
+          m_game->set_waiting_level( create_level() );
           m_game->run();
           m_game.reset();
         }

@@ -19,12 +19,14 @@ namespace m3
     public:
       gem_ring();
       
+      float get_radius() const;
+      
       void pre_cache() override;
       void build() override;
       void progress( bear::universe::time_type elapsed_time ) override;
       void get_visual
       ( std::list< bear::engine::scene_visual >& visuals ) const override;
-      
+
     private:
       typedef bear::engine::base_item super;
 

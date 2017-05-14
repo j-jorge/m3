@@ -5,7 +5,6 @@ set( M3_LAUNCHER_TARGET_NAME m3 )
 prepend_string(
   M3_LAUNCHER_FILES
   "${source_root}/app/launcher/src/m3/app/"
-  create_initial_level.cpp
   launcher.cpp
   main.cpp
   )
@@ -20,7 +19,6 @@ target_include_directories(
   PRIVATE
   "${source_root}/app/launcher/include"
   ${BEAR_ENGINE_INCLUDE_DIRECTORY}
-  ${BEAR_ITEMS_INCLUDE_DIRECTORY}
   )
 
 link_directories(
@@ -33,12 +31,7 @@ target_link_libraries(
   ${M3_LAUNCHER_TARGET_NAME}
 
   m3_items
-  bear_generic_items
   bear_engine
-  bear_input
-  bear_text_interface
-  bear_universe
-  bear_visual
   ${CLAW_APPLICATION_LIBRARIES}
   )
 

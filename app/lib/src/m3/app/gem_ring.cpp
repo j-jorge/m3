@@ -46,6 +46,11 @@ m3::app::gem_ring::gem_ring()
   set_friction( 1 );
 }
 
+float m3::app::gem_ring::get_radius() const
+{
+  return m_radius;
+}
+      
 void m3::app::gem_ring::pre_cache()
 {
   super::pre_cache();

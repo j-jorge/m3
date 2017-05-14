@@ -7,6 +7,8 @@ find_package( RapidJSON )
 prepend_string(
   M3_ITEMS_FILES
   "${source_root}/app/lib/src/m3/app/"
+  camera.cpp
+  create_level.cpp
   gem_ring.cpp
   input_controller.cpp
 
@@ -28,12 +30,18 @@ target_include_directories(
   PUBLIC
   "${source_root}/app/lib/include"
   "${BEAR_ENGINE_INCLUDE_DIRECTORY}"
+  "${BEAR_ITEMS_INCLUDE_DIRECTORY}"
   )
 
 target_link_libraries(
   ${M3_ITEMS_LIBRARY_NAME}
   PUBLIC
   m3_core
+  bear_generic_items
+  bear_input
+  bear_text_interface
+  bear_universe
+  bear_visual
   ${CLAW_TWEEN_LIBRARIES}
   )
 
