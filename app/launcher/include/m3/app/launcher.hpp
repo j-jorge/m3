@@ -20,13 +20,13 @@ namespace m3
       public claw::application
     {
     public:
-      launcher( int& argc, char** &argv );
+      launcher( int argc, char** argv );
       virtual ~launcher();
 
       virtual int run();
 
     private:
-      void create_game( int& argc, char** &argv );
+      void create_game( int argc, char** argv );
       void help() const;
 
     private:

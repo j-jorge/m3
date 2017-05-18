@@ -28,11 +28,15 @@ namespace m3
     namespace detail
     {
       static void initialize_logger();
+
+      static std::vector< char* >
+      alloc_engine_arguments( int argc, char** argv );
+      static void free_engine_arguments( std::vector< char* >& args );
     }
   }
 }
 
-m3::app::launcher::launcher( int& argc, char** &argv )
+m3::app::launcher::launcher( int argc, char** argv )
   : claw::application(argc, argv)
 {
   m_arguments.add
@@ -74,43 +78,15 @@ int m3::app::launcher::run()
     }
 }
 
-void m3::app::launcher::create_game( int& argc, char** &argv )
+void m3::app::launcher::create_game( int argc, char** argv )
 {
-  const char* default_args[] =
-    {
-      "--game-name=M3",
-      "--screen-width=720",
-      "--screen-height=1280",
-      "--active-area=250",
-
-#ifdef __ANDROID__
-      "--fullscreen",
-#else
-      m3_launch_argument( "--data-path=", M3_DATA_DIRECTORY ),
-#endif
-
-      "--auto-load-symbols",
-      "--sync-render",
-      nullptr
-    };
-
-  int default_argc(0);
-  while ( default_args[ default_argc ] != nullptr )
-    ++default_argc;
-
-  int final_argc( argc + default_argc );
-  const char** final_args = new const char*[ final_argc ];
-
-  for ( int i=0; i!=default_argc; ++i )
-    final_args[i] = default_args[i];
-
-  for ( int i=0; i!=argc; ++i )
-    final_args[ default_argc + i ] = argv[i];
-
+  std::vector< char* > args( detail::alloc_engine_arguments( argc, argv ) );
+  char** engine_argv( args.data() );
+  int engine_argc( args.size() );
+      
   try
     {
-      char** engine_args = const_cast< char** >(final_args);
-      m_game.reset( new bear::engine::game( final_argc, engine_args ) );
+      m_game.reset( new bear::engine::game( engine_argc, engine_argv ) );
 
 #ifdef __ANDROID__
       bear::engine::resource_pool::get_instance().add_pool
@@ -123,7 +99,7 @@ void m3::app::launcher::create_game( int& argc, char** &argv )
       help();
     }
 
-  delete[] final_args;
+  detail::free_engine_arguments( args );
 }
 
 void m3::app::launcher::help() const
@@ -149,3 +125,42 @@ void m3::app::detail::initialize_logger()
 
 #endif
 }
+
+std::vector< char* >
+m3::app::detail::alloc_engine_arguments( int argc, char** argv )
+{
+  static const char* default_args[] =
+    {
+      "--game-name=M3",
+      "--screen-width=720",
+      "--screen-height=1280",
+      "--active-area=250",
+
+#ifdef __ANDROID__
+      "--fullscreen",
+#else
+      m3_launch_argument( "--data-path=", M3_DATA_DIRECTORY ),
+#endif
+
+      "--auto-load-symbols",
+      "--sync-render",
+      nullptr
+    };
+
+  std::vector< char* > result;
+  
+  for ( std::size_t i( 0 ); default_args[ i ] != nullptr; ++i )
+    result.push_back( strdup( default_args[ i ] ) );
+
+  for ( int i( 0 ); i != argc; ++i )
+    result.push_back( strdup( argv[ i ] ) );
+
+  return result;
+}
+
+void m3::app::detail::free_engine_arguments( std::vector< char* >& args )
+{
+  for ( char* arg : args )
+    free( arg );
+}
+
