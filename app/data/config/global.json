@@ -2,7 +2,7 @@
     "expansion.per-frame.min": 2,
     "expansion.per-frame.max": 10,
     "expansion.speed-up.start-date": 3600,
-    "expansion.speed-up.duration": 18000,
+    "expansion.speed-up.end-date": 22000,
 
     "initial-gem-count": 40,
     "gem-type-count": 4,
@@ -13,11 +13,10 @@
 
     "resize-duration": 50,
 
-    "launch.first-date": 120,
     "launch-interval.min": 50,
-    "launch-interval.max": 300,
-    "launch-speed-up.start-date": 3600,
-    "launch-speed-up.duration": 18000,
+    "launch-interval.max": 200,
+    "launch-speed-up.start-date": 1000,
+    "launch-speed-up.end-date": 3500,
 
     "input.move.threshold": 2,
     "input.velocity.motionless.threshold": 0.3,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "m3/game_loop.hpp"
 #include "m3/gem_ring.hpp"
 
 #include "engine/base_item.hpp"
@@ -18,6 +19,7 @@ namespace m3
 
     public:
       gem_ring();
+      gem_ring( const gem_ring& that );
       
       float get_radius() const;
       
@@ -31,6 +33,9 @@ namespace m3
       typedef bear::engine::base_item super;
 
     private:
+      void configure_game_loop();
+      void fill_gem_sprites();
+
       void get_ring_visuals
       ( std::list< bear::engine::scene_visual >& visuals ) const;
       void get_launched_visuals
@@ -46,27 +51,17 @@ namespace m3
       void enter_expansion_state();
       void update_expansion();
 
-      void launch_gem();
-      void update_coming_next();
-      void update_next_launch_date();
-
-      bool remove_matches();
-      
+      void set_launcher_visuals();
       float get_ring_radius() const;
 
-      void fill_gem_sprites();
-      void initialize_ring();
-      
       float get_expansion_rate() const;
       float get_expansion_speed() const;
       
     private:
       std::vector< bear::visual::sprite > m_gem_sprite;
-      std::uint64_t m_date;
-      std::uint64_t m_next_launch_date;
       m3::gem_ring m_ring;
-      m3::gem m_coming_next;
-      bear::engine::scene_visual m_coming_next_visual;
+      m3::game_loop m_game_loop;
+      std::vector< bear::engine::scene_visual > m_coming_next_visuals;
       float m_radius;
       int m_state;
       claw::tween::tweener m_radius_tweener;
