@@ -6,6 +6,7 @@ add_library(
   m3_math STATIC 
 
   "${math_module_root}/src/m3/math/circle_section_index.cpp"
+  "${math_module_root}/src/m3/math/linear_range_interpolation.cpp"
   )
 
 target_include_directories(
