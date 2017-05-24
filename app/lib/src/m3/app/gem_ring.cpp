@@ -64,6 +64,12 @@ float m3::app::gem_ring::get_radius() const
   return m_radius;
 }
       
+boost::signals2::connection m3::app::gem_ring::connect_to_radius_updated
+( const std::function< void() >& f )
+{
+  return m_radius_updated.connect( f );
+}
+
 void m3::app::gem_ring::pre_cache()
 {
   super::pre_cache();
@@ -230,6 +236,7 @@ void m3::app::gem_ring::update_radius()
 void m3::app::gem_ring::complete_radius_state()
 {
   enter_expansion_state();
+  m_radius_updated();
 }
 
 void m3::app::gem_ring::enter_expansion_state()

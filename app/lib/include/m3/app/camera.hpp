@@ -3,6 +3,8 @@
 #include "engine/base_item.hpp"
 #include "engine/export.hpp"
 
+#include <claw/tween/tweener.hpp>
+
 namespace m3
 {
   namespace app
@@ -26,7 +28,14 @@ namespace m3
       typedef bear::engine::base_item super;
 
     private:
+      void start_update();
+      void update_size( float width );
+      void complete_update();
+      
+    private:
       gem_ring* m_ring;
+      claw::tween::tweener m_tweener;
+      bool m_do_update;
     };
   }
 }

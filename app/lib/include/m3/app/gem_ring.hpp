@@ -3,6 +3,9 @@
 #include "m3/game_loop.hpp"
 #include "m3/gem_ring.hpp"
 
+#include "m3/boost/signals.hpp"
+#include "m3/stl/function.hpp"
+
 #include "engine/base_item.hpp"
 #include "engine/export.hpp"
 
@@ -22,6 +25,9 @@ namespace m3
       gem_ring( const gem_ring& that );
       
       float get_radius() const;
+
+      boost::signals2::connection connect_to_radius_updated
+      ( const std::function< void() >& f );
       
       void pre_cache() override;
       void build() override;
@@ -65,6 +71,8 @@ namespace m3
       float m_radius;
       int m_state;
       claw::tween::tweener m_radius_tweener;
+
+      boost::signals2::signal< void() > m_radius_updated;
     };
   }
 }

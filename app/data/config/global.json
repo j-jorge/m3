@@ -25,7 +25,8 @@
     "input.velocity.random.max": 0.2,
 
     "camera.margin": 100,
-    "camera.minimal_width": 720,
+    "camera.minimal-width": 720,
+    "camera.resize-duration": 50,
 
     "level.width": 7200,
     "level.height": 12800
