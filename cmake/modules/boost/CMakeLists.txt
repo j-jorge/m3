@@ -13,13 +13,15 @@ install(
   DESTINATION ${M3_INSTALL_LIBRARY_DIR}
   )
 
-find_package( Boost 1.60 )
+find_package( Boost 1.60 REQUIRED )
+
+message( "INCLUDE ${Boost_INCLUDE_DIR}" )
 
 target_include_directories(
   m3_boost
   PUBLIC
   "${boost_module_root}/include"
-  ${BOOST_INCLUDE_DIR}
+  ${Boost_INCLUDE_DIR}
   )
 
 target_link_libraries(

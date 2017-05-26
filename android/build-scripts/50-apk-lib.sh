@@ -74,6 +74,7 @@ compile()
              -lbear_generic_items \
              -Wl,--as-needed -Wl,--no-whole-archive \
              -lm3_core \
+             -lm3_boost \
              -lm3_math \
              -lm3_stl \
              -lbear_engine \
@@ -126,6 +127,11 @@ compile
 cp $ANDROID_TOOLCHAIN_ROOT/arm-linux-androideabi/lib/libgnustl_shared.so \
     "$TARGET_DIR"
 
+/home/julien/local/android-toolchain/arm-linux-androideabi/bin/nm \
+    --demangle \
+    "$TARGET_DIR"/libm3.so \
+    > $SOURCE_ROOT/symbols.txt
+    
 $ANDROID_TOOLCHAIN_ROOT/bin/arm-linux-androideabi-strip --strip-all \
     "$TARGET_DIR"/*.so \
 

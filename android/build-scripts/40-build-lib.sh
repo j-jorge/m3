@@ -19,9 +19,7 @@ configure()
 
     pwd
 
-    echo "$CFLAGS"
-    echo "$CXXFLAGS"
-    echo "$ANDROID_CC"
+    echo "GGO GOGOGOG $ANDROID_BOOST_INCLUDE_DIR" 
     CC="$ANDROID_CC $CFLAGS" CXX="$ANDROID_CXX $CXXFLAGS" AR=$ANDROID_AR \
        cmake -B. -H$SOURCE_ROOT/cmake \
        -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
