@@ -31,5 +31,8 @@
     "level.width": 7200,
     "level.height": 12800,
 
-    "glow-per-frame": 0.05
+    "glow-per-frame": 0.05,
+
+    "winning-ring-size": 10,
+    "losing-ring-size": 50
 }

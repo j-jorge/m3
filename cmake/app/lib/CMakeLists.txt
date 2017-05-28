@@ -50,6 +50,7 @@ target_link_libraries(
   bear_universe
   bear_visual
   ${CLAW_TWEEN_LIBRARIES}
+  ${CLAW_GRAPHIC_LIBRARIES}
   )
 
 install(

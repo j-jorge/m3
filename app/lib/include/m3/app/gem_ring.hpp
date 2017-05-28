@@ -45,6 +45,10 @@ namespace m3
       void fill_default_gem_sprites( unsigned int gem_type_count );
       void fill_glowing_gem_sprites( unsigned int gem_type_count );
 
+      void fill_game_over_bounds_visuals();
+      
+      void get_game_over_bounds_visuals
+      ( std::list< bear::engine::scene_visual >& visuals ) const;
       void get_ring_visuals
       ( std::list< bear::engine::scene_visual >& visuals ) const;
       void get_launched_visuals
@@ -69,6 +73,11 @@ namespace m3
       void update_glow();
       
     private:
+      const unsigned int m_win_size;
+      const unsigned int m_lose_size;
+      
+      std::vector< bear::engine::scene_visual > m_game_over_bounds_visuals;
+
       std::vector< bear::visual::sprite > m_gem_sprite;
       std::vector< bear::visual::sprite > m_glow_sprite;
       

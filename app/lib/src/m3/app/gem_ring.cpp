@@ -1,5 +1,6 @@
 #include "m3/app/gem_ring.hpp"
 
+#include "m3/app/create_level.hpp"
 #include "m3/app/config/get_config.hpp"
 
 #include "m3/find_adjacent_ring_gems.hpp"
@@ -7,7 +8,9 @@
 #include "m3/math/pi_times_2.hpp"
 
 #include "engine/level_globals.hpp"
+#include "engine/game.hpp"
 #include "visual/scene_sprite.hpp"
+#include "visual/scene_star.hpp"
 
 #include <claw/tween/single_tweener.hpp>
 #include <claw/tween/easing/easing_back.hpp>
@@ -22,6 +25,11 @@ namespace m3
   {
     namespace detail
     {
+      static float get_radius_for_gem_count( std::size_t count );
+      static bear::engine::scene_visual create_game_over_visual
+      ( const bear::universe::position_type& center, const float size,
+        const bear::visual::color_type& color );
+
       namespace state
       {
         static constexpr int radius_animation = 1;
@@ -32,7 +40,9 @@ namespace m3
 }
         
 m3::app::gem_ring::gem_ring()
-  : m_game_loop
+  : m_win_size( get_config< unsigned int >( "winning-ring-size" ) ),
+    m_lose_size( get_config< unsigned int >( "losing-ring-size" ) ),
+    m_game_loop
     ( m_ring,
       m3::gem_generator( get_config< unsigned int >( "gem-type-count" ) ) ),
     m_radius( 0 ),
@@ -83,6 +93,8 @@ void m3::app::gem_ring::build()
   super::build();
 
   fill_gem_sprites();
+  fill_game_over_bounds_visuals();
+  
   m_game_loop.start( get_config< unsigned int >( "initial-gem-count" ) );
   
   enter_radius_animation_state();
@@ -111,6 +123,7 @@ void m3::app::gem_ring::get_visual
 {
   super::get_visual( visuals );
 
+  get_game_over_bounds_visuals( visuals );
   get_ring_visuals( visuals );
   get_launched_visuals( visuals );
   get_launcher_visual( visuals );
@@ -169,6 +182,34 @@ void m3::app::gem_ring::fill_glowing_gem_sprites( unsigned int gem_type_count )
     m_glow_sprite.push_back
       ( get_level_globals().auto_sprite
         ( "gfx/sprites.png", prefix + char( '0' + i ) + suffix ) );
+}
+
+void m3::app::gem_ring::fill_game_over_bounds_visuals()
+{
+  m_game_over_bounds_visuals.reserve( 2 );
+
+  static const bear::visual::color_type win_color( "#00e000" );
+  static const bear::visual::color_type lose_color( "#e00000" );
+  
+  const float win_size
+    ( 2 * detail::get_radius_for_gem_count( m_win_size ) );
+  const float lose_size
+    ( 2 * detail::get_radius_for_gem_count( m_lose_size ) );
+  
+  const bear::universe::position_type center( get_center_of_mass() );
+  
+  m_game_over_bounds_visuals.emplace_back
+    ( detail::create_game_over_visual( center, win_size, win_color ) );
+  m_game_over_bounds_visuals.emplace_back
+    ( detail::create_game_over_visual( center, lose_size, lose_color ) );
+}
+
+void m3::app::gem_ring::get_game_over_bounds_visuals
+( std::list< bear::engine::scene_visual >& visuals ) const
+{
+  visuals.insert
+    ( visuals.end(), m_game_over_bounds_visuals.begin(),
+      m_game_over_bounds_visuals.end() );
 }
 
 void m3::app::gem_ring::get_ring_visuals
@@ -255,7 +296,13 @@ void m3::app::gem_ring::enter_radius_animation_state()
 
   m_state = detail::state::radius_animation;
 
-  animate_radius_change();
+  const std::size_t count( m_ring.chain().size() );
+
+  if ( ( count == m_win_size ) || ( count == m_lose_size ) )
+    bear::engine::game::get_instance().set_waiting_level
+      ( create_level() );
+  else
+    animate_radius_change();
 }
 
 void m3::app::gem_ring::animate_radius_change()
@@ -322,12 +369,7 @@ void m3::app::gem_ring::set_launcher_visuals()
 
 float m3::app::gem_ring::get_ring_radius() const
 {
-  static const float gem_size( get_config< float >( "gem-size" ) );
-  
-  const std::vector< m3::gem >& gems( m_ring.chain() );
-  const std::size_t count( gems.size() );
-
-  return count * gem_size / m3::math::pi_times_2;
+  return detail::get_radius_for_gem_count( m_ring.chain().size() );
 }
 
 float m3::app::gem_ring::get_expansion_rate() const
@@ -380,4 +422,26 @@ void m3::app::gem_ring::update_glow()
 
   for ( std::size_t i( 0 ); i != count; ++i )
     m_glow[ i ] = m_glowing[ i ] * std::min( 1.0f, m_glow[ i ] + glow_step );
+}
+
+float m3::app::detail::get_radius_for_gem_count( std::size_t count )
+{
+  static const float gem_size( get_config< float >( "gem-size" ) );
+  
+  return count * gem_size / m3::math::pi_times_2;
+}
+
+bear::engine::scene_visual m3::app::detail::create_game_over_visual
+( const bear::universe::position_type& center, const float size,
+  const bear::visual::color_type& color )
+{
+  const float half_size( size / 2 );
+  
+  bear::visual::scene_star result
+    ( center.x - half_size, center.y - half_size, color,
+      bear::visual::star( 20, 1 ), 3 );
+
+  result.get_rendering_attributes().set_size( size, size );
+
+  return result;
 }
