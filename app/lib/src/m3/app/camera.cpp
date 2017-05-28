@@ -11,7 +11,8 @@
 BASE_ITEM_EXPORT( camera, m3::app );
 
 m3::app::camera::camera()
-  : m_ring( nullptr )
+  : m_ring( nullptr ),
+    m_do_update( false )
 {
 
 }

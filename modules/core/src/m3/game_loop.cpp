@@ -8,7 +8,8 @@
 
 m3::game_loop::game_loop( gem_ring& ring, const gem_generator& generator )
   : m_ring( ring ),
-    m_generator( generator )
+    m_generator( generator ),
+    m_next_launch_date( 0 )
 {
 
 }
