@@ -23,7 +23,7 @@ namespace m3
     const std::vector< float >& free_gem_radius() const;
     const std::vector< float >& free_gem_direction() const;
 
-    std::size_t expand( float d );
+    std::vector< std::size_t > expand( float d );
     
   private:
     std::size_t direction_to_chain_index( float d ) const;

@@ -27,7 +27,9 @@ namespace m3
     void launch_speed_up_time_range
     ( unsigned int start_date, unsigned int end_date );
     void launch_interval_range( unsigned int min, unsigned int max );
+
     void match_size( unsigned int size );
+    unsigned int match_size() const;
     
     void start( unsigned int initial_gem_count );
     void tick( float expansion_rate );

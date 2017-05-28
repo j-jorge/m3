@@ -40,7 +40,10 @@ namespace m3
 
     private:
       void configure_game_loop();
+
       void fill_gem_sprites();
+      void fill_default_gem_sprites( unsigned int gem_type_count );
+      void fill_glowing_gem_sprites( unsigned int gem_type_count );
 
       void get_ring_visuals
       ( std::list< bear::engine::scene_visual >& visuals ) const;
@@ -62,15 +65,22 @@ namespace m3
 
       float get_expansion_rate() const;
       float get_expansion_speed() const;
+
+      void update_glow();
       
     private:
       std::vector< bear::visual::sprite > m_gem_sprite;
+      std::vector< bear::visual::sprite > m_glow_sprite;
+      
       m3::gem_ring m_ring;
       m3::game_loop m_game_loop;
       std::vector< bear::engine::scene_visual > m_coming_next_visuals;
+      std::vector< float > m_glow;
+      std::vector< bool > m_glowing;
       float m_radius;
       int m_state;
       claw::tween::tweener m_radius_tweener;
+      claw::tween::tweener m_glow_tweener;
 
       boost::signals2::signal< void() > m_radius_updated;
     };

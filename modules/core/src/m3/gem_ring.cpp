@@ -59,11 +59,11 @@ const std::vector< float >& m3::gem_ring::free_gem_direction() const
   return m_free_gem_direction;
 }
 
-std::size_t m3::gem_ring::expand( float d )
+std::vector< std::size_t > m3::gem_ring::expand( float d )
 {
   std::size_t i( 0 );
   auto end( m_free_gem_radius.end() );
-  const std::size_t initial_size( m_chain.size() );
+  std::vector< std::size_t > result;
   
   for ( auto it( m_free_gem_radius.begin() ); it != end; )
     {
@@ -74,11 +74,15 @@ std::size_t m3::gem_ring::expand( float d )
         {
           const auto gem_it( m_free_gems.begin() + i );
           const auto gem_direction( m_free_gem_direction.begin() + i );
+
+          const std::size_t index( direction_to_chain_index( *gem_direction ) );
+
+          for ( std::size_t& inserted : result )
+            inserted += ( inserted >= index );
+      
+          result.push_back( index );
           
-          m_chain.insert
-            ( m_chain.begin()
-              + direction_to_chain_index( *gem_direction ) ,
-              *gem_it );
+          m_chain.insert( m_chain.begin() + index, *gem_it );
           m_free_gems.erase( gem_it );
           
           m_free_gem_direction.erase( gem_direction );
@@ -93,8 +97,7 @@ std::size_t m3::gem_ring::expand( float d )
         }
     }
 
-  assert( initial_size <= m_chain.size() );
-  return m_chain.size() - initial_size;
+  return result;
 }
 
 std::size_t m3::gem_ring::direction_to_chain_index( float d ) const

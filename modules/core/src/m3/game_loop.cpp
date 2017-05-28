@@ -63,6 +63,11 @@ void m3::game_loop::match_size( unsigned int size )
   m_match_size = size;
 }
 
+unsigned int m3::game_loop::match_size() const
+{
+  return m_match_size;
+}
+
 void m3::game_loop::start( unsigned int initial_gem_count )
 {
   m_date = 0;
@@ -99,7 +104,7 @@ void m3::game_loop::update( float expansion_rate )
       update_coming_next();
     }
 
-  if ( m_ring.expand( expansion_rate ) != 0 )
+  if ( !m_ring.expand( expansion_rate ).empty() )
     m_inserted();
 }
 

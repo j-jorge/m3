@@ -50,11 +50,18 @@ endfunction()
 prepend_string(
   M3_GEM_FILES
   "${M3_ASSETS_DIRECTORY}/gfx/"
+  gem-0.png
   gem-1.png
   gem-2.png
   gem-3.png
   gem-4.png
   gem-5.png
+  gem-0-glow.png
+  gem-1-glow.png
+  gem-2-glow.png
+  gem-3-glow.png
+  gem-4-glow.png
+  gem-5-glow.png
   gem-placeholder.png
   )
 

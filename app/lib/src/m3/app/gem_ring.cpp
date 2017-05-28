@@ -2,6 +2,7 @@
 
 #include "m3/app/config/get_config.hpp"
 
+#include "m3/find_adjacent_ring_gems.hpp"
 #include "m3/math/linear_range_interpolation.hpp"
 #include "m3/math/pi_times_2.hpp"
 
@@ -92,7 +93,8 @@ void m3::app::gem_ring::progress( bear::universe::time_type elapsed_time )
   super::progress( elapsed_time );
 
   m_ring.set_orientation( get_system_angle() );
-
+  update_glow();
+  
   switch( m_state )
     {
     case detail::state::radius_animation:
@@ -133,7 +135,13 @@ void m3::app::gem_ring::fill_gem_sprites()
   static const unsigned int gem_type_count
     ( get_config< unsigned int >( "gem-type-count" ) );
   assert( gem_type_count < 9 );
-  
+
+  fill_default_gem_sprites( gem_type_count );
+  fill_glowing_gem_sprites( gem_type_count );
+}
+
+void m3::app::gem_ring::fill_default_gem_sprites( unsigned int gem_type_count )
+{
   m_gem_sprite.reserve( gem_type_count + 1 );
 
   m_gem_sprite.push_back
@@ -144,7 +152,23 @@ void m3::app::gem_ring::fill_gem_sprites()
   for ( unsigned int i( 0 ); i != gem_type_count; ++i )
     m_gem_sprite.push_back
       ( get_level_globals().auto_sprite
-        ( "gfx/sprites.png", prefix + char( '1' + i ) ) );
+        ( "gfx/sprites.png", prefix + char( '0' + i ) ) );
+}
+
+void m3::app::gem_ring::fill_glowing_gem_sprites( unsigned int gem_type_count )
+{
+  m_glow_sprite.reserve( gem_type_count + 1 );
+
+  m_glow_sprite.push_back
+    ( get_level_globals().auto_sprite( "gfx/sprites.png", "gem-placeholder" ) );
+
+  static const std::string prefix( "gem-" );
+  static const std::string suffix( "-glow" );
+  
+  for ( unsigned int i( 0 ); i != gem_type_count; ++i )
+    m_glow_sprite.push_back
+      ( get_level_globals().auto_sprite
+        ( "gfx/sprites.png", prefix + char( '0' + i ) + suffix ) );
 }
 
 void m3::app::gem_ring::get_ring_visuals
@@ -154,17 +178,45 @@ void m3::app::gem_ring::get_ring_visuals
   const float orientation( m_ring.get_orientation() );
   const std::size_t count( gems.size() );
 
-  const bear::universe::position_type center( get_center_of_mass() );
+  std::vector< const bear::visual::sprite* > sprites( count );
+  std::vector< const bear::visual::sprite* > glow_sprites( count );
+  std::vector< float > center;
+  center.reserve( 2 * count );
+  const bear::universe::position_type ring_center( get_center_of_mass() );
   
   for ( std::size_t i( 0 ); i != count; ++i )
     {
-      const bear::visual::sprite& s( m_gem_sprite[ gems[ i ] ] );
+      const std::size_t gem( gems[ i ] );
+
+      sprites[ i ] = &m_gem_sprite[ gem ];
+      glow_sprites[ i ] = &m_glow_sprite[ gem ];
+      
       const float a( orientation + i * m3::math::pi_times_2 / count );
-      const float x( center.x + std::cos( a ) * m_radius - s.width() / 2 );
-      const float y( center.y + std::sin( a ) * m_radius - s.height() / 2 );
+
+      center.push_back( ring_center.x + std::cos( a ) * m_radius );
+      center.push_back( ring_center.y + std::sin( a ) * m_radius );
+    }
+
+  for ( std::size_t i( 0 ), j( 0 ); i != count; ++i, j += 2 )
+    {
+      const bear::visual::sprite& s( *sprites[ i ] );
+      const float x( center[ j ] - s.width() / 2 );
+      const float y( center[ j + 1 ] - s.height() / 2 );
 
       visuals.push_back( bear::visual::scene_sprite( x, y, s ) );
     }
+
+  for ( std::size_t i( 0 ), j( 0 ); i != count; ++i, j += 2 )
+    if ( m_glowing[ i ] )
+      {
+        const bear::visual::sprite& s( *glow_sprites[ i ] );
+        const float x( center[ j ] - s.width() / 2 );
+        const float y( center[ j + 1 ] - s.height() / 2 );
+
+        bear::visual::scene_sprite element( x, y, s );
+        element.get_rendering_attributes().set_opacity( m_glow[ i ] > 0 );
+        visuals.push_back( element );
+      }
 }
 
 void m3::app::gem_ring::get_launched_visuals
@@ -202,7 +254,7 @@ void m3::app::gem_ring::enter_radius_animation_state()
   assert( m_state == detail::state::expand );
 
   m_state = detail::state::radius_animation;
-  
+
   animate_radius_change();
 }
 
@@ -296,4 +348,36 @@ float m3::app::gem_ring::get_expansion_speed() const
 
   return m3::math::linear_range_interpolation
     ( m_game_loop.date(), start_date, end_date, min_speed, max_speed );
+}
+
+void m3::app::gem_ring::update_glow()
+{
+  m3::gem_ring ring( m_ring );
+  std::vector< std::size_t > inserted( ring.expand( 1 ) );
+  const std::size_t inserted_count( inserted.size() );
+  std::sort( inserted.begin(), inserted.end() );
+  
+  const std::vector< m3::gem > chain( ring.chain() );
+  const std::size_t count( chain.size() );
+  
+  m_glowing.clear();
+  m_glowing.resize( count, 0 );
+  m_glow.resize( count, 0 );
+
+  std::size_t j( 0 );
+  std::size_t offset( 0 );
+  
+  for ( std::size_t i
+          : m3::find_adjacent_ring_gems( chain, m_game_loop.match_size() ) )
+    {
+      const bool skip( ( j < inserted_count ) && ( i == inserted[ j ] ) );
+      m_glowing[ i - offset ] = !skip;
+      offset += skip;
+      j += skip;
+    }
+
+  static const float glow_step( get_config< float >( "glow-per-frame" ) );
+
+  for ( std::size_t i( 0 ); i != count; ++i )
+    m_glow[ i ] = m_glowing[ i ] * std::min( 1.0f, m_glow[ i ] + glow_step );
 }

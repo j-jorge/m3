@@ -29,5 +29,7 @@
     "camera.resize-duration": 50,
 
     "level.width": 7200,
-    "level.height": 12800
+    "level.height": 12800,
+
+    "glow-per-frame": 0.05
 }
