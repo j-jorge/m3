@@ -139,6 +139,14 @@ void m3::app::gem_ring::configure_game_loop()
     ( get_config< float >( "launch-speed-up.start-date" ),
       get_config< float >( "launch-speed-up.end-date" ) );
 
+  m_game_loop.launch_count_interval_range
+    ( get_config< unsigned int >( "launch-count-interval.min" ),
+      get_config< unsigned int >( "launch-count-interval.max" ) );
+  
+  m_game_loop.launch_count_increment_time_range
+    ( get_config< float >( "launch-count-increment.start-date" ),
+      get_config< float >( "launch-count-increment.end-date" ) );
+
   m_game_loop.match_size
     ( get_config< unsigned int >( "minimum-match-size" ) );
 }
@@ -357,13 +365,19 @@ void m3::app::gem_ring::set_launcher_visuals()
 
   m_coming_next_visuals.clear();
 
+  float scale( 1 );
+  
   for ( const m3::gem& g : m_game_loop.coming_next() )
     {
-      const bear::visual::sprite& s( m_gem_sprite[ g ] );
-  
+      bear::visual::sprite s( m_gem_sprite[ g ] );
+
+      s.set_width( s.width() * scale );
+      s.set_height( s.height() * scale );
+      
       m_coming_next_visuals.emplace_back
         ( bear::visual::scene_sprite
           ( center.x - s.width() / 2, center.y - s.height() / 2, s ) );
+      scale *= 0.7;
     }
 }
 

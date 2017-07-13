@@ -15,8 +15,13 @@
 
     "launch-interval.min": 50,
     "launch-interval.max": 200,
-    "launch-speed-up.start-date": 1000,
-    "launch-speed-up.end-date": 3500,
+    "launch-speed-up.start-date": 2000,
+    "launch-speed-up.end-date": 4500,
+
+    "launch-count-interval.min": 1,
+    "launch-count-interval.max": 2,
+    "launch-count-increment.start-date": 1000,
+    "launch-count-increment.end-date": 2500,
 
     "input.move.threshold": 2,
     "input.velocity.motionless.threshold": 0.3,

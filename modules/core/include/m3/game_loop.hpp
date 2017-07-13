@@ -28,6 +28,10 @@ namespace m3
     ( unsigned int start_date, unsigned int end_date );
     void launch_interval_range( unsigned int min, unsigned int max );
 
+    void launch_count_increment_time_range
+    ( unsigned int start_date, unsigned int end_date );
+    void launch_count_interval_range( unsigned int min, unsigned int max );
+
     void match_size( unsigned int size );
     unsigned int match_size() const;
     
@@ -38,6 +42,7 @@ namespace m3
     void update( float expansion_rate );
     void launch_gem();
     void update_coming_next();
+    std::size_t launch_count() const;
     void update_next_launch_date();
 
   private:
@@ -49,6 +54,10 @@ namespace m3
     unsigned int m_launch_speed_up_end_date;
     unsigned int m_launch_interval_min;
     unsigned int m_launch_interval_max;
+    unsigned int m_launch_count_increment_start_date;
+    unsigned int m_launch_count_increment_end_date;
+    unsigned int m_launch_count_interval_min;
+    unsigned int m_launch_count_interval_max;
     unsigned int m_match_size;
     
     std::vector< gem > m_coming_next;

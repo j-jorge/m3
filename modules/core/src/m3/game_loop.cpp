@@ -58,6 +58,23 @@ void m3::game_loop::launch_interval_range( unsigned int min, unsigned int max )
   m_launch_interval_max = max;
 }
 
+void m3::game_loop::launch_count_increment_time_range
+( unsigned int start_date, unsigned int end_date )
+{
+  assert( start_date <= end_date );
+  
+  m_launch_count_increment_start_date = start_date;
+  m_launch_count_increment_end_date = end_date;
+}
+
+void m3::game_loop::launch_count_interval_range
+( unsigned int min, unsigned int max )
+{
+  assert( min <= max );
+  m_launch_count_interval_min = min;
+  m_launch_count_interval_max = max;
+}
+
 void m3::game_loop::match_size( unsigned int size )
 {
   assert( size >= 3 );
@@ -123,9 +140,20 @@ void m3::game_loop::launch_gem()
 void m3::game_loop::update_coming_next()
 {
   assert( m_coming_next.empty() );
-  m_coming_next.push_back( m_generator.random() );
+
+  const std::size_t count( launch_count() );
+  for ( std::size_t i( 0 ); i != count; ++i )
+    m_coming_next.push_back( m_generator.random() );
 
   m_launcher_updated();
+}
+
+std::size_t m3::game_loop::launch_count() const
+{
+  return math::linear_range_interpolation
+    ( m_date, m_launch_count_increment_start_date,
+      m_launch_count_increment_end_date, m_launch_count_interval_min,
+      m_launch_count_interval_max );
 }
 
 void m3::game_loop::update_next_launch_date()
