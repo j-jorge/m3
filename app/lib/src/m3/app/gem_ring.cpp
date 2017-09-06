@@ -306,7 +306,7 @@ void m3::app::gem_ring::enter_radius_animation_state()
 
   const std::size_t count( m_ring.chain().size() );
 
-  if ( ( count == m_win_size ) || ( count == m_lose_size ) )
+  if ( ( count <= m_win_size ) || ( count >= m_lose_size ) )
     bear::engine::game::get_instance().set_waiting_level
       ( create_level() );
   else
