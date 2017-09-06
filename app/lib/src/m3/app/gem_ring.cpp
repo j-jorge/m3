@@ -453,7 +453,7 @@ bear::engine::scene_visual m3::app::detail::create_game_over_visual
   
   bear::visual::scene_star result
     ( center.x - half_size, center.y - half_size, color,
-      bear::visual::star( 20, 1 ), 3 );
+      bear::visual::star( 30, 1 ), 3 );
 
   result.get_rendering_attributes().set_size( size, size );
 
