@@ -19,7 +19,7 @@
     "launch-speed-up.end-date": 4500,
 
     "launch-count-interval.min": 1,
-    "launch-count-interval.max": 2,
+    "launch-count-interval.max": 1,
     "launch-count-increment.start-date": 1000,
     "launch-count-increment.end-date": 2500,
 
