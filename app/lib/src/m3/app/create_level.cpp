@@ -5,6 +5,7 @@
 #include "m3/app/input_controller.hpp"
 #include "m3/app/config/get_config.hpp"
 
+#include "generic_items/decorative_item.hpp"
 #include "generic_items/layer/action_layer.hpp"
 
 #include "engine/level.hpp"
@@ -15,6 +16,9 @@ namespace m3
   {
     namespace detail
     {
+      static bear::decorative_item* create_background
+      ( bear::engine::level_globals& globals,
+        const bear::universe::position_type& position );
       static gem_ring* create_ring
       ( const bear::universe::position_type& position );
       static input_controller* create_input_controller
@@ -33,6 +37,7 @@ bear::engine::level* m3::app::create_level()
 
   bear::engine::level* const result
     ( new bear::engine::level( "m3", "", level_size, "", nullptr, nullptr ) );
+  
   bear::engine::layer* const layer( new bear::action_layer( level_size ) );
 
   result->push_layer( layer );
@@ -42,6 +47,26 @@ bear::engine::level* m3::app::create_level()
   layer->add_item( *ring );
   layer->add_item( *detail::create_input_controller( *ring, position ) );
   layer->add_item( *detail::create_camera( *ring, position ) );
+
+  layer->add_item
+    ( *detail::create_background( result->get_globals(), position ) );
+
+  return result;
+}
+
+bear::decorative_item* m3::app::detail::create_background
+( bear::engine::level_globals& globals,
+  const bear::universe::position_type& position )
+{
+  bear::decorative_item* result( new bear::decorative_item() );
+
+  bear::visual::sprite sprite( globals.get_image( "background.png" ) );
+
+  result->set_z_position( -1000 );
+  result->set_animation( sprite );
+  result->set_bounding_box
+    ( bear::universe::rectangle_type( 0, 0, sprite.width(), sprite.height() ) );
+  result->set_center_of_mass( position );
   
   return result;
 }
