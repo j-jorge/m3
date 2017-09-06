@@ -1,8 +1,8 @@
 {
     "expansion.per-frame.min": 2,
-    "expansion.per-frame.max": 10,
+    "expansion.per-frame.max": 20,
     "expansion.speed-up.start-date": 3600,
-    "expansion.speed-up.end-date": 22000,
+    "expansion.speed-up.end-date": 33000,
 
     "initial-gem-count": 40,
     "gem-type-count": 4,
