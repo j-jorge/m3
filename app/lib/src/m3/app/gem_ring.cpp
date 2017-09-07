@@ -263,7 +263,7 @@ void m3::app::gem_ring::get_ring_visuals
         const float y( center[ j + 1 ] - s.height() / 2 );
 
         bear::visual::scene_sprite element( x, y, s );
-        element.get_rendering_attributes().set_opacity( m_glow[ i ] > 0 );
+        element.get_rendering_attributes().set_opacity( m_glow[ i ] );
         visuals.push_back( element );
       }
 }
