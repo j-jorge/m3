@@ -256,16 +256,20 @@ void m3::app::gem_ring::get_ring_visuals
     }
 
   for ( std::size_t i( 0 ), j( 0 ); i != count; ++i, j += 2 )
-    if ( m_glowing[ i ] )
-      {
-        const bear::visual::sprite& s( *glow_sprites[ i ] );
-        const float x( center[ j ] - s.width() / 2 );
-        const float y( center[ j + 1 ] - s.height() / 2 );
+    {
+      const float glow( m_glow[ i ] );
+      
+      if ( glow > 0 )
+        {
+          const bear::visual::sprite& s( *glow_sprites[ i ] );
+          const float x( center[ j ] - s.width() / 2 );
+          const float y( center[ j + 1 ] - s.height() / 2 );
 
-        bear::visual::scene_sprite element( x, y, s );
-        element.get_rendering_attributes().set_opacity( m_glow[ i ] );
-        visuals.push_back( element );
-      }
+          bear::visual::scene_sprite element( x, y, s );
+          element.get_rendering_attributes().set_opacity( glow );
+          visuals.push_back( element );
+        }
+    }
 }
 
 void m3::app::gem_ring::get_launched_visuals
@@ -409,33 +413,60 @@ float m3::app::gem_ring::get_expansion_speed() const
 void m3::app::gem_ring::update_glow()
 {
   m3::gem_ring ring( m_ring );
+
+  const std::size_t old_count( ring.chain().size() );
+  
+  std::vector< bool > glowing( old_count, false );
+  m_glow.resize( old_count, 0 );
+
   std::vector< std::size_t > inserted( ring.expand( 1 ) );
+  const std::size_t new_count( ring.chain().size() );
   const std::size_t inserted_count( inserted.size() );
   std::sort( inserted.begin(), inserted.end() );
-  
-  const std::vector< m3::gem > chain( ring.chain() );
-  const std::size_t count( chain.size() );
-  
-  m_glowing.clear();
-  m_glowing.resize( count, 0 );
-  m_glow.resize( count, 0 );
 
+  std::vector< std::size_t > index( new_count );
+  const std::size_t guard( new_count );
   std::size_t j( 0 );
   std::size_t offset( 0 );
   
-  for ( std::size_t i
-          : m3::find_adjacent_ring_gems( chain, m_game_loop.match_size() ) )
+  for ( std::size_t i( 0 ); i != new_count; ++i )
     {
-      const bool skip( ( j < inserted_count ) && ( i == inserted[ j ] ) );
-      m_glowing[ i - offset ] = !skip;
+      const bool skip( ( j != inserted_count ) && ( i == inserted[ j ] ) );
       offset += skip;
       j += skip;
+      index[ i ] = skip * guard + !skip * ( i - offset );
     }
+
+  std::vector< std::size_t > removed;
+  const std::vector< m3::gem >* chain;
+
+  const unsigned int match_size( m_game_loop.match_size() );
+  
+  do
+    {
+      chain = &ring.chain();
+      assert( index.size() == chain->size() );
+      removed = m3::find_adjacent_ring_gems( *chain, match_size );
+
+      const auto rend( removed.rend() );
+      
+      for ( auto it( removed.rbegin() ); it != rend; ++it )
+        {
+          const auto rit( index.begin() + *it );
+
+          glowing[ *rit ] = ( *rit != guard );
+          index.erase( rit );
+        }
+
+      ring.erase( removed );
+      assert( index.size() == ring.chain().size() );
+    }
+  while( !removed.empty() );
 
   static const float glow_step( get_config< float >( "glow-per-frame" ) );
 
-  for ( std::size_t i( 0 ); i != count; ++i )
-    m_glow[ i ] = m_glowing[ i ] * std::min( 1.0f, m_glow[ i ] + glow_step );
+  for ( std::size_t i( 0 ); i != old_count; ++i )
+    m_glow[ i ] = glowing[ i ] * std::min( 1.0f, m_glow[ i ] + glow_step );
 }
 
 float m3::app::detail::get_radius_for_gem_count( std::size_t count )

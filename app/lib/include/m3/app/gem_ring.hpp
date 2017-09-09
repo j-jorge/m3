@@ -85,7 +85,6 @@ namespace m3
       m3::game_loop m_game_loop;
       std::vector< bear::engine::scene_visual > m_coming_next_visuals;
       std::vector< float > m_glow;
-      std::vector< bool > m_glowing;
       float m_radius;
       int m_state;
       claw::tween::tweener m_radius_tweener;
