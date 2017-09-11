@@ -1,4 +1,4 @@
-#include "m3/gem_ring.hpp"
+#include "m3/game/gem_ring.hpp"
 
 #include "m3/math/circle_section_index.hpp"
 #include "m3/math/pi_times_2.hpp"
@@ -6,30 +6,30 @@
 #include <algorithm>
 #include <cassert>
 
-m3::gem_ring::gem_ring()
+m3::game::gem_ring::gem_ring()
   : m_orientation( 0 )
 {
 
 }
 
-float m3::gem_ring::get_orientation() const
+float m3::game::gem_ring::get_orientation() const
 {
   return m_orientation;
 }
 
-void m3::gem_ring::set_orientation( float orientation )
+void m3::game::gem_ring::set_orientation( float orientation )
 {
   m_orientation = orientation;
 }
 
-void m3::gem_ring::launch( float direction, gem g )
+void m3::game::gem_ring::launch( float direction, gem g )
 {
   m_free_gems.push_back( g );
   m_free_gem_radius.push_back( 0 );
   m_free_gem_direction.push_back( direction );
 }
 
-void m3::gem_ring::erase( const std::vector< std::size_t >& indices )
+void m3::game::gem_ring::erase( const std::vector< std::size_t >& indices )
 {
   assert( std::is_sorted( indices.begin(), indices.end() ) );
 
@@ -39,27 +39,27 @@ void m3::gem_ring::erase( const std::vector< std::size_t >& indices )
     m_chain.erase( m_chain.begin() + *it );
 }
 
-const std::vector< m3::gem >& m3::gem_ring::chain() const
+const std::vector< m3::game::gem >& m3::game::gem_ring::chain() const
 {
   return m_chain;
 }
 
-const std::vector< m3::gem >& m3::gem_ring::free_gems() const
+const std::vector< m3::game::gem >& m3::game::gem_ring::free_gems() const
 {
   return m_free_gems;
 }
 
-const std::vector< float >& m3::gem_ring::free_gem_radius() const
+const std::vector< float >& m3::game::gem_ring::free_gem_radius() const
 {
   return m_free_gem_radius;
 }
 
-const std::vector< float >& m3::gem_ring::free_gem_direction() const
+const std::vector< float >& m3::game::gem_ring::free_gem_direction() const
 {
   return m_free_gem_direction;
 }
 
-std::vector< std::size_t > m3::gem_ring::expand( float d )
+std::vector< std::size_t > m3::game::gem_ring::expand( float d )
 {
   std::size_t i( 0 );
   auto end( m_free_gem_radius.end() );
@@ -100,7 +100,7 @@ std::vector< std::size_t > m3::gem_ring::expand( float d )
   return result;
 }
 
-std::size_t m3::gem_ring::direction_to_chain_index( float d ) const
+std::size_t m3::game::gem_ring::direction_to_chain_index( float d ) const
 {
   return m3::math::circle_section_index( d - m_orientation, m_chain.size() );
 }

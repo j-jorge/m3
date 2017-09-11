@@ -1,21 +1,25 @@
-#include "m3/find_adjacent_ring_gems.hpp"
+#include "m3/game/find_adjacent_ring_gems.hpp"
 
 namespace m3
 {
-  namespace detail
+  namespace game
   {
-    static void insert_range
-    ( std::vector< std::size_t >& result, std::size_t begin, std::size_t end );
+    namespace detail
+    {
+      static void insert_range
+      ( std::vector< std::size_t >& result, std::size_t begin,
+        std::size_t end );
 
-    static std::size_t find_first_not_of
-    ( const std::vector< gem >& ring, gem key, std::size_t start );
+      static std::size_t find_first_not_of
+      ( const std::vector< gem >& ring, gem key, std::size_t start );
 
-    static std::size_t find_first_of_backward
-    ( const std::vector< gem >& ring, gem key, std::size_t start );
+      static std::size_t find_first_of_backward
+      ( const std::vector< gem >& ring, gem key, std::size_t start );
+    }
   }
 }
 
-std::vector< std::size_t > m3::find_adjacent_ring_gems
+std::vector< std::size_t > m3::game::find_adjacent_ring_gems
 ( const std::vector< gem >& ring, std::size_t range_size )
 {
   const std::size_t gem_count( ring.size() );
@@ -55,7 +59,7 @@ std::vector< std::size_t > m3::find_adjacent_ring_gems
   return result;
 }
 
-std::size_t m3::detail::find_first_not_of
+std::size_t m3::game::detail::find_first_not_of
 ( const std::vector< gem >& ring, gem key, std::size_t start )
 {
   const std::size_t end( ring.size() );
@@ -68,7 +72,7 @@ std::size_t m3::detail::find_first_not_of
 }
 
 std::size_t
-m3::detail::find_first_of_backward
+m3::game::detail::find_first_of_backward
 ( const std::vector< gem >& ring, gem key, std::size_t start )
 {
   std::size_t i( start );
@@ -85,7 +89,7 @@ m3::detail::find_first_of_backward
   return 0;
 }
 
-void m3::detail::insert_range
+void m3::game::detail::insert_range
 ( std::vector< std::size_t >& result, std::size_t begin, std::size_t end )
 {
   for ( std::size_t i( begin ); i != end; ++i )

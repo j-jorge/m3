@@ -1,10 +1,10 @@
-project( libm3_core )
+project( libm3_game )
 
-set( core_module_root "${modules_root}/core" )
+set( game_module_root "${modules_root}/game" )
 
 prepend_string(
-  m3_core_files
-  "${core_module_root}/src/m3/"
+  m3_game_files
+  "${game_module_root}/src/m3/game/"
 
   "find_adjacent_ring_gems.cpp"
   "game_loop.cpp"
@@ -13,16 +13,16 @@ prepend_string(
   "random_ring_without_match.cpp"
   )
 
-add_library( m3_core STATIC ${m3_core_files} )
+add_library( m3_game STATIC ${m3_game_files} )
 
 target_include_directories(
-  m3_core
+  m3_game
   PUBLIC
-  "${core_module_root}/include"
+  "${game_module_root}/include"
   )
 
 target_link_libraries(
-  m3_core
+  m3_game
   PUBLIC
   m3_math
   m3_boost
@@ -30,7 +30,7 @@ target_link_libraries(
   )
 
 install(
-  TARGETS m3_core
+  TARGETS m3_game
   DESTINATION ${M3_INSTALL_LIBRARY_DIR}
   )
 

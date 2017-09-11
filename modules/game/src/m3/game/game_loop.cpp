@@ -1,12 +1,12 @@
-#include "m3/game_loop.hpp"
+#include "m3/game/game_loop.hpp"
 
-#include "m3/gem_ring.hpp"
-#include "m3/find_adjacent_ring_gems.hpp"
-#include "m3/random_ring_without_match.hpp"
+#include "m3/game/gem_ring.hpp"
+#include "m3/game/find_adjacent_ring_gems.hpp"
+#include "m3/game/random_ring_without_match.hpp"
 #include "m3/math/linear_range_interpolation.hpp"
 #include "m3/math/pi_times_2.hpp"
 
-m3::game_loop::game_loop( gem_ring& ring, const gem_generator& generator )
+m3::game::game_loop::game_loop( gem_ring& ring, const gem_generator& generator )
   : m_ring( ring ),
     m_generator( generator ),
     m_next_launch_date( 0 )
@@ -14,35 +14,35 @@ m3::game_loop::game_loop( gem_ring& ring, const gem_generator& generator )
 
 }
 
-boost::signals2::connection m3::game_loop::connect_to_destroyed
+boost::signals2::connection m3::game::game_loop::connect_to_destroyed
 ( const std::function< void( const std::vector< std::size_t >& ) >& f )
 {
   return m_destroyed.connect( f );
 }
   
-boost::signals2::connection m3::game_loop::connect_to_inserted
+boost::signals2::connection m3::game::game_loop::connect_to_inserted
 ( const std::function< void() >& f )
 {
   return m_inserted.connect( f );
 }
   
-boost::signals2::connection m3::game_loop::connect_to_launcher_updated
+boost::signals2::connection m3::game::game_loop::connect_to_launcher_updated
 ( const std::function< void() >& f )
 {
   return m_launcher_updated.connect( f );
 }
   
-const std::vector< m3::gem >& m3::game_loop::coming_next() const
+const std::vector< m3::game::gem >& m3::game::game_loop::coming_next() const
 {
   return m_coming_next;
 }
 
-unsigned int m3::game_loop::date() const
+unsigned int m3::game::game_loop::date() const
 {
   return m_date;
 }
 
-void m3::game_loop::launch_speed_up_time_range
+void m3::game::game_loop::launch_speed_up_time_range
 ( unsigned int start_date, unsigned int end_date )
 {
   assert( start_date <= end_date );
@@ -51,14 +51,15 @@ void m3::game_loop::launch_speed_up_time_range
   m_launch_speed_up_end_date = end_date;
 }
 
-void m3::game_loop::launch_interval_range( unsigned int min, unsigned int max )
+void
+m3::game::game_loop::launch_interval_range( unsigned int min, unsigned int max )
 {
   assert( min <= max );
   m_launch_interval_min = min;
   m_launch_interval_max = max;
 }
 
-void m3::game_loop::launch_count_increment_time_range
+void m3::game::game_loop::launch_count_increment_time_range
 ( unsigned int start_date, unsigned int end_date )
 {
   assert( start_date <= end_date );
@@ -67,7 +68,7 @@ void m3::game_loop::launch_count_increment_time_range
   m_launch_count_increment_end_date = end_date;
 }
 
-void m3::game_loop::launch_count_interval_range
+void m3::game::game_loop::launch_count_interval_range
 ( unsigned int min, unsigned int max )
 {
   assert( min <= max );
@@ -75,18 +76,18 @@ void m3::game_loop::launch_count_interval_range
   m_launch_count_interval_max = max;
 }
 
-void m3::game_loop::match_size( unsigned int size )
+void m3::game::game_loop::match_size( unsigned int size )
 {
   assert( size >= 3 );
   m_match_size = size;
 }
 
-unsigned int m3::game_loop::match_size() const
+unsigned int m3::game::game_loop::match_size() const
 {
   return m_match_size;
 }
 
-void m3::game_loop::start( unsigned int initial_gem_count )
+void m3::game::game_loop::start( unsigned int initial_gem_count )
 {
   m_date = 0;
   update_next_launch_date();
@@ -97,7 +98,7 @@ void m3::game_loop::start( unsigned int initial_gem_count )
   update_coming_next();
 }
 
-void m3::game_loop::tick( float expansion_rate )
+void m3::game::game_loop::tick( float expansion_rate )
 {
   const std::vector< std::size_t > matches
     ( find_adjacent_ring_gems( m_ring.chain(), m_match_size ) );
@@ -111,7 +112,7 @@ void m3::game_loop::tick( float expansion_rate )
     update( expansion_rate );
 }
 
-void m3::game_loop::update( float expansion_rate )
+void m3::game::game_loop::update( float expansion_rate )
 {
   ++m_date;
 
@@ -126,7 +127,7 @@ void m3::game_loop::update( float expansion_rate )
     m_inserted();
 }
 
-void m3::game_loop::launch_gem()
+void m3::game::game_loop::launch_gem()
 {
   for( gem g : m_coming_next )
     {
@@ -137,7 +138,7 @@ void m3::game_loop::launch_gem()
   m_coming_next.clear();
 }
 
-void m3::game_loop::update_coming_next()
+void m3::game::game_loop::update_coming_next()
 {
   assert( m_coming_next.empty() );
 
@@ -148,7 +149,7 @@ void m3::game_loop::update_coming_next()
   m_launcher_updated();
 }
 
-std::size_t m3::game_loop::launch_count() const
+std::size_t m3::game::game_loop::launch_count() const
 {
   return math::linear_range_interpolation
     ( m_date, m_launch_count_increment_start_date,
@@ -156,7 +157,7 @@ std::size_t m3::game_loop::launch_count() const
       m_launch_count_interval_max );
 }
 
-void m3::game_loop::update_next_launch_date()
+void m3::game::game_loop::update_next_launch_date()
 {
   m_next_launch_date +=
     math::linear_range_interpolation

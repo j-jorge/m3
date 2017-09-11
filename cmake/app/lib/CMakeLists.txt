@@ -43,7 +43,7 @@ link_directories(
 target_link_libraries(
   ${M3_ITEMS_LIBRARY_NAME}
   PUBLIC
-  m3_core
+  m3_game
   bear_generic_items
   bear_input
   bear_text_interface

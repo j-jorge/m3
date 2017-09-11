@@ -1,8 +1,8 @@
-#include "m3/random_ring_without_match.hpp"
+#include "m3/game/random_ring_without_match.hpp"
 
-#include "m3/gem_generator.hpp"
-#include "m3/gem_ring.hpp"
-#include "m3/find_adjacent_ring_gems.hpp"
+#include "m3/game/gem_generator.hpp"
+#include "m3/game/gem_ring.hpp"
+#include "m3/game/find_adjacent_ring_gems.hpp"
 
 #include <gtest/gtest.h>
 
@@ -21,13 +21,13 @@ TEST_P( random_ring_without_match_test, chain )
   static const unsigned int count( ::testing::get< 1 >( GetParam() ) );
   static const unsigned int match_size( 3 );
 
-  m3::gem_ring ring;
-  m3::gem_generator generator( gem_type_count );
-  m3::random_ring_without_match( ring, generator, count, match_size );
+  m3::game::gem_ring ring;
+  m3::game::gem_generator generator( gem_type_count );
+  m3::game::random_ring_without_match( ring, generator, count, match_size );
 
   EXPECT_EQ( count, ring.chain().size() );
   EXPECT_TRUE
-    ( m3::find_adjacent_ring_gems( ring.chain(), match_size ).empty() );
+    ( m3::game::find_adjacent_ring_gems( ring.chain(), match_size ).empty() );
 }
 
 INSTANTIATE_TEST_CASE_P

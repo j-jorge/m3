@@ -1,11 +1,11 @@
-#include "m3/random_ring_without_match.hpp"
+#include "m3/game/random_ring_without_match.hpp"
 
-#include "m3/gem_generator.hpp"
-#include "m3/gem_ring.hpp"
+#include "m3/game/gem_generator.hpp"
+#include "m3/game/gem_ring.hpp"
 
 #include <cassert>
 
-void m3::random_ring_without_match
+void m3::game::random_ring_without_match
 ( gem_ring& ring, const gem_generator& generator, unsigned int count,
   unsigned int match_size )
 {

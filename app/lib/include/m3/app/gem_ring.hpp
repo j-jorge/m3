@@ -1,7 +1,7 @@
 #pragma once
 
-#include "m3/game_loop.hpp"
-#include "m3/gem_ring.hpp"
+#include "m3/game/game_loop.hpp"
+#include "m3/game/gem_ring.hpp"
 
 #include "m3/boost/signals.hpp"
 #include "m3/stl/function.hpp"
@@ -81,8 +81,8 @@ namespace m3
       std::vector< bear::visual::sprite > m_gem_sprite;
       std::vector< bear::visual::sprite > m_glow_sprite;
       
-      m3::gem_ring m_ring;
-      m3::game_loop m_game_loop;
+      m3::game::gem_ring m_ring;
+      m3::game::game_loop m_game_loop;
       std::vector< bear::engine::scene_visual > m_coming_next_visuals;
       std::vector< float > m_glow;
       float m_radius;

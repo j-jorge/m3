@@ -3,7 +3,7 @@
 #include "m3/app/create_level.hpp"
 #include "m3/app/config/get_config.hpp"
 
-#include "m3/find_adjacent_ring_gems.hpp"
+#include "m3/game/find_adjacent_ring_gems.hpp"
 #include "m3/math/linear_range_interpolation.hpp"
 #include "m3/math/pi_times_2.hpp"
 
@@ -44,7 +44,8 @@ m3::app::gem_ring::gem_ring()
     m_lose_size( get_config< unsigned int >( "losing-ring-size" ) ),
     m_game_loop
     ( m_ring,
-      m3::gem_generator( get_config< unsigned int >( "gem-type-count" ) ) ),
+      m3::game::gem_generator
+      ( get_config< unsigned int >( "gem-type-count" ) ) ),
     m_radius( 0 ),
     m_state( detail::state::expand )
 {
@@ -223,7 +224,7 @@ void m3::app::gem_ring::get_game_over_bounds_visuals
 void m3::app::gem_ring::get_ring_visuals
 ( std::list< bear::engine::scene_visual >& visuals ) const
 {
-  const std::vector< m3::gem >& gems( m_ring.chain() );
+  const std::vector< m3::game::gem >& gems( m_ring.chain() );
   const float orientation( m_ring.get_orientation() );
   const std::size_t count( gems.size() );
 
@@ -275,7 +276,7 @@ void m3::app::gem_ring::get_ring_visuals
 void m3::app::gem_ring::get_launched_visuals
 ( std::list< bear::engine::scene_visual >& visuals ) const
 {
-  const std::vector< m3::gem >& gems( m_ring.free_gems() );
+  const std::vector< m3::game::gem >& gems( m_ring.free_gems() );
   const std::vector< float >& radius( m_ring.free_gem_radius() );
   const std::vector< float >& direction( m_ring.free_gem_direction() );
 
@@ -371,7 +372,7 @@ void m3::app::gem_ring::set_launcher_visuals()
 
   float scale( 1 );
   
-  for ( const m3::gem& g : m_game_loop.coming_next() )
+  for ( const m3::game::gem& g : m_game_loop.coming_next() )
     {
       bear::visual::sprite s( m_gem_sprite[ g ] );
 
@@ -412,7 +413,7 @@ float m3::app::gem_ring::get_expansion_speed() const
 
 void m3::app::gem_ring::update_glow()
 {
-  m3::gem_ring ring( m_ring );
+  m3::game::gem_ring ring( m_ring );
 
   const std::size_t old_count( ring.chain().size() );
   
@@ -438,7 +439,7 @@ void m3::app::gem_ring::update_glow()
     }
 
   std::vector< std::size_t > removed;
-  const std::vector< m3::gem >* chain;
+  const std::vector< m3::game::gem >* chain;
 
   const unsigned int match_size( m_game_loop.match_size() );
   
@@ -446,7 +447,7 @@ void m3::app::gem_ring::update_glow()
     {
       chain = &ring.chain();
       assert( index.size() == chain->size() );
-      removed = m3::find_adjacent_ring_gems( *chain, match_size );
+      removed = m3::game::find_adjacent_ring_gems( *chain, match_size );
 
       const auto rend( removed.rend() );
       
