@@ -73,7 +73,8 @@ compile()
              -lm3_items \
              -lbear_generic_items \
              -Wl,--as-needed -Wl,--no-whole-archive \
-             -lm3_core \
+             -lm3_game \
+             -lm3_table \
              -lm3_boost \
              -lm3_math \
              -lm3_stl \

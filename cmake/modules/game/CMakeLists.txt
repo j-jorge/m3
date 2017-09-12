@@ -7,6 +7,7 @@ prepend_string(
   "${game_module_root}/src/m3/game/"
 
   "find_adjacent_ring_gems.cpp"
+  "forward_destructions.cpp"
   "game_loop.cpp"
   "gem_generator.cpp"
   "gem_ring.cpp"
@@ -24,6 +25,7 @@ target_include_directories(
 target_link_libraries(
   m3_game
   PUBLIC
+  m3_table
   m3_math
   m3_boost
   m3_stl

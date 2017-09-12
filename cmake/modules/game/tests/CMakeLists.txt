@@ -5,6 +5,12 @@ declare_test(
   )
 
 declare_test(
+  "${game_module_root}/tests/src/m3/game/forward_destructions.cpp"
+  forward_destructions
+  m3_game
+  )
+
+declare_test(
   "${game_module_root}/tests/src/m3/game/gem_generator.cpp"
   gem_generator
   m3_game
