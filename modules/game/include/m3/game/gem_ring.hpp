@@ -12,7 +12,8 @@ namespace m3
     {
     public:
       gem_ring();
-
+      explicit gem_ring( const std::vector< gem >& chain );
+      
       float get_orientation() const;
       void set_orientation( float orientation );
 

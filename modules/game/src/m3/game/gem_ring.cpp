@@ -12,6 +12,13 @@ m3::game::gem_ring::gem_ring()
 
 }
 
+m3::game::gem_ring::gem_ring( const std::vector< gem >& chain )
+  : m_chain( chain ),
+    m_orientation( 0 )
+{
+
+}
+
 float m3::game::gem_ring::get_orientation() const
 {
   return m_orientation;

@@ -7,6 +7,10 @@ TEST( gem_ring, initial_orientation )
   m3::game::gem_ring ring;
   
   EXPECT_FLOAT_EQ( 0, ring.get_orientation() );
+  EXPECT_TRUE( ring.chain().empty() );
+  EXPECT_TRUE( ring.free_gems().empty() );
+  EXPECT_TRUE( ring.free_gem_radius().empty() );
+  EXPECT_TRUE( ring.free_gem_direction().empty() );
 }
 
 TEST( gem_ring, set_orientation )
@@ -15,6 +19,18 @@ TEST( gem_ring, set_orientation )
   ring.set_orientation( 0.3 );
   
   EXPECT_FLOAT_EQ( 0.3, ring.get_orientation() );
+}
+
+TEST( gem_ring, chain_constructor )
+{
+  const std::vector< m3::game::gem > chain( { 2, 3, 5 } );
+  m3::game::gem_ring ring( chain );
+  
+  EXPECT_FLOAT_EQ( 0, ring.get_orientation() );
+  EXPECT_EQ( chain, ring.chain() );
+  EXPECT_TRUE( ring.free_gems().empty() );
+  EXPECT_TRUE( ring.free_gem_radius().empty() );
+  EXPECT_TRUE( ring.free_gem_direction().empty() );
 }
 
 TEST( gem_ring, launch )
