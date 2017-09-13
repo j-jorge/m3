@@ -154,3 +154,9 @@ TEST( find_adjacent_ring_gems, loop_multiple_solutions )
   EXPECT_EQ( expected, ranges );
 }
 
+TEST( find_adjacent_ring_gems, too_small )
+{
+  EXPECT_TRUE( m3::game::find_adjacent_ring_gems( { 1 }, 2 ).empty() );
+  EXPECT_TRUE( m3::game::find_adjacent_ring_gems( { 1, 1 }, 3 ).empty() );
+}
+

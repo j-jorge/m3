@@ -25,7 +25,7 @@ std::vector< std::size_t > m3::game::find_adjacent_ring_gems
   const std::size_t gem_count( ring.size() );
   std::vector< std::size_t > result;
 
-  if ( gem_count == 0 )
+  if ( ( gem_count < range_size ) || ( gem_count == 0 ) )
     return result;
 
   result.reserve( gem_count );
