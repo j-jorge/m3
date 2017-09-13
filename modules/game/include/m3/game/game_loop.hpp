@@ -19,7 +19,7 @@ namespace m3
       boost::signals2::connection connect_to_destroyed
       ( const std::function< void( const std::vector< std::size_t >& ) >& f );
       boost::signals2::connection connect_to_inserted
-      ( const std::function< void() >& f );
+      ( const std::function< void( const std::vector< std::size_t >& ) >& f );
       boost::signals2::connection connect_to_launcher_updated
       ( const std::function< void() >& f );
     
@@ -68,7 +68,8 @@ namespace m3
       boost::signals2::signal< void( const std::vector< std::size_t >& ) >
       m_destroyed;
     
-      boost::signals2::signal< void() > m_inserted;
+      boost::signals2::signal< void( const std::vector< std::size_t >& ) >
+      m_inserted;
       boost::signals2::signal< void() > m_launcher_updated;
     };
   }

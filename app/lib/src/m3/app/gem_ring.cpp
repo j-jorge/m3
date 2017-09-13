@@ -4,6 +4,7 @@
 #include "m3/app/config/get_config.hpp"
 
 #include "m3/game/find_adjacent_ring_gems.hpp"
+#include "m3/game/forward_destructions.hpp"
 #include "m3/math/linear_range_interpolation.hpp"
 #include "m3/math/pi_times_2.hpp"
 
@@ -14,8 +15,6 @@
 
 #include <claw/tween/single_tweener.hpp>
 #include <claw/tween/easing/easing_back.hpp>
-
-#include <boost/bind.hpp>
 
 BASE_ITEM_EXPORT( gem_ring, m3::app );
 
@@ -56,11 +55,11 @@ m3::app::gem_ring::gem_ring()
   set_friction( 1 );
 
   m_game_loop.connect_to_launcher_updated
-    ( boost::bind( &gem_ring::set_launcher_visuals, this ) );
+    ( std::bind( &gem_ring::set_launcher_visuals, this ) );
   m_game_loop.connect_to_destroyed
-    ( boost::bind( &gem_ring::enter_radius_animation_state, this ) );
+    ( std::bind( &gem_ring::gems_destroyed, this, std::placeholders::_1 ) );
   m_game_loop.connect_to_inserted
-    ( boost::bind( &gem_ring::enter_radius_animation_state, this ) );
+    ( std::bind( &gem_ring::gems_inserted, this, std::placeholders::_1 ) );
 
   configure_game_loop();
 }
@@ -95,9 +94,13 @@ void m3::app::gem_ring::build()
 
   fill_gem_sprites();
   fill_game_over_bounds_visuals();
-  
-  m_game_loop.start( get_config< unsigned int >( "initial-gem-count" ) );
-  
+
+  const unsigned int count( get_config< unsigned int >( "initial-gem-count" ) );
+  m_game_loop.start( count );
+
+  assert( m_glow.empty() );
+  m_glow.resize( count, 0 );
+
   enter_radius_animation_state();
 }
 
@@ -303,6 +306,29 @@ void m3::app::gem_ring::get_launcher_visual
       m_coming_next_visuals.end() );
 }
 
+void m3::app::gem_ring::gems_inserted
+( const std::vector< std::size_t >& indices )
+{
+  m_glow.reserve( m_glow.size() + indices.size() );
+  const auto begin( m_glow.begin() );
+  
+  for ( std::size_t i : indices )
+    m_glow.insert( begin + i, 0 );
+  
+  enter_radius_animation_state();
+}
+
+void m3::app::gem_ring::gems_destroyed
+( const std::vector< std::size_t >& indices )
+{
+  const auto begin( m_glow.begin() );
+  
+  for ( std::size_t i : indices )
+    m_glow.erase( begin + i );
+
+  enter_radius_animation_state();
+}
+
 void m3::app::gem_ring::enter_radius_animation_state()
 {
   assert( m_state == detail::state::expand );
@@ -335,7 +361,7 @@ void m3::app::gem_ring::animate_radius_change()
       &claw::tween::easing_back::ease_out );
 
   m_radius_tweener.on_finished
-    ( boost::bind( &gem_ring::complete_radius_state, this ) );
+    ( std::bind( &gem_ring::complete_radius_state, this ) );
 }
 
 void m3::app::gem_ring::update_radius()
@@ -413,60 +439,15 @@ float m3::app::gem_ring::get_expansion_speed() const
 
 void m3::app::gem_ring::update_glow()
 {
-  m3::game::gem_ring ring( m_ring );
+  const std::vector< bool > glowing
+    ( m3::game::forward_destructions( m_ring, m_game_loop.match_size() ) );
 
-  const std::size_t old_count( ring.chain().size() );
+  const std::size_t size( m_glow.size() );
+  assert( size == glowing.size() );
   
-  std::vector< bool > glowing( old_count, false );
-  m_glow.resize( old_count, 0 );
-
-  std::vector< std::size_t > inserted( ring.expand( 1 ) );
-  const std::size_t new_count( ring.chain().size() );
-  const std::size_t inserted_count( inserted.size() );
-  std::sort( inserted.begin(), inserted.end() );
-
-  std::vector< std::size_t > index( new_count );
-  const std::size_t guard( new_count );
-  std::size_t j( 0 );
-  std::size_t offset( 0 );
-  
-  for ( std::size_t i( 0 ); i != new_count; ++i )
-    {
-      const bool skip( ( j != inserted_count ) && ( i == inserted[ j ] ) );
-      offset += skip;
-      j += skip;
-      index[ i ] = skip * guard + !skip * ( i - offset );
-    }
-
-  std::vector< std::size_t > removed;
-  const std::vector< m3::game::gem >* chain;
-
-  const unsigned int match_size( m_game_loop.match_size() );
-  
-  do
-    {
-      chain = &ring.chain();
-      assert( index.size() == chain->size() );
-      removed = m3::game::find_adjacent_ring_gems( *chain, match_size );
-
-      const auto rend( removed.rend() );
-      
-      for ( auto it( removed.rbegin() ); it != rend; ++it )
-        {
-          const auto rit( index.begin() + *it );
-
-          glowing[ *rit ] = ( *rit != guard );
-          index.erase( rit );
-        }
-
-      ring.erase( removed );
-      assert( index.size() == ring.chain().size() );
-    }
-  while( !removed.empty() );
-
   static const float glow_step( get_config< float >( "glow-per-frame" ) );
 
-  for ( std::size_t i( 0 ); i != old_count; ++i )
+  for ( std::size_t i( 0 ); i != size; ++i )
     m_glow[ i ] = glowing[ i ] * std::min( 1.0f, m_glow[ i ] + glow_step );
 }
 

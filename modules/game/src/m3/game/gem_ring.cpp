@@ -4,6 +4,7 @@
 #include "m3/math/pi_times_2.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <cassert>
 
 m3::game::gem_ring::gem_ring()
@@ -68,6 +69,11 @@ const std::vector< float >& m3::game::gem_ring::free_gem_direction() const
 
 std::vector< std::size_t > m3::game::gem_ring::expand( float d )
 {
+  assert
+    ( std::is_sorted
+      ( m_free_gem_radius.begin(), m_free_gem_radius.end(),
+        std::greater< float >() ) );
+  
   std::size_t i( 0 );
   auto end( m_free_gem_radius.end() );
   std::vector< std::size_t > result;

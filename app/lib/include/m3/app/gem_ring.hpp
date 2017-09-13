@@ -56,6 +56,9 @@ namespace m3
       void get_launcher_visual
       ( std::list< bear::engine::scene_visual >& visuals ) const;
 
+      void gems_inserted( const std::vector< std::size_t >& indices );
+      void gems_destroyed( const std::vector< std::size_t >& indices );
+      
       void enter_radius_animation_state();
       void animate_radius_change();
       void update_radius();

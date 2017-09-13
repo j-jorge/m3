@@ -21,7 +21,7 @@ boost::signals2::connection m3::game::game_loop::connect_to_destroyed
 }
   
 boost::signals2::connection m3::game::game_loop::connect_to_inserted
-( const std::function< void() >& f )
+( const std::function< void( const std::vector< std::size_t >& ) >& f )
 {
   return m_inserted.connect( f );
 }
@@ -123,8 +123,10 @@ void m3::game::game_loop::update( float expansion_rate )
       update_coming_next();
     }
 
-  if ( !m_ring.expand( expansion_rate ).empty() )
-    m_inserted();
+  const std::vector< std::size_t > indices( m_ring.expand( expansion_rate ) );
+  
+  if ( !indices.empty() )
+    m_inserted( indices );
 }
 
 void m3::game::game_loop::launch_gem()
